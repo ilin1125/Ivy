@@ -27,7 +27,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
     arrival_time: '',
     arrival_location: '',
     flight_info: '',
-    luggage_count: 0,
+    luggage_passengers: '',
     other_details: '',
     appointment_type_id: '',
     status: 'scheduled'
@@ -48,7 +48,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
         arrival_time: appointment.arrival_time ? appointment.arrival_time.slice(0, 16) : '',
         arrival_location: appointment.arrival_location || '',
         flight_info: appointment.flight_info || '',
-        luggage_count: appointment.luggage_count || 0,
+        luggage_passengers: appointment.luggage_passengers || '',
         other_details: appointment.other_details || '',
         appointment_type_id: appointment.appointment_type_id || (appointmentTypes[0]?.id || ''),
         status: appointment.status || 'scheduled'
@@ -129,6 +129,21 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="status">狀態</Label>
+            <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
+              <SelectTrigger data-testid="modal-status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="scheduled">已排程</SelectItem>
+                <SelectItem value="in_progress">進行中</SelectItem>
+                <SelectItem value="completed">已完成</SelectItem>
+                <SelectItem value="cancelled">已取消</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="pickup_location">接送地點 *</Label>
@@ -192,31 +207,15 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="luggage_count">行李數量</Label>
+              <Label htmlFor="luggage_passengers">行李/人數</Label>
               <Input
-                id="luggage_count"
-                type="number"
-                min="0"
-                value={formData.luggage_count}
-                onChange={(e) => handleChange('luggage_count', parseInt(e.target.value) || 0)}
-                data-testid="modal-luggage-count"
+                id="luggage_passengers"
+                value={formData.luggage_passengers}
+                onChange={(e) => handleChange('luggage_passengers', e.target.value)}
+                placeholder="例如：2件/3人"
+                data-testid="modal-luggage-passengers"
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="status">狀態</Label>
-            <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
-              <SelectTrigger data-testid="modal-status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="scheduled">已排程</SelectItem>
-                <SelectItem value="in_progress">進行中</SelectItem>
-                <SelectItem value="completed">已完成</SelectItem>
-                <SelectItem value="cancelled">已取消</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="space-y-2">

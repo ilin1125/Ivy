@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
-import { Clock, MapPin, Edit } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 const statusConfig = {
@@ -94,11 +93,11 @@ export default function AppointmentCalendar({ appointments, appointmentTypes, on
         </CardContent>
       </Card>
 
-      {/* Appointments for selected date */}
+      {/* Appointments for selected date - Google Calendar style */}
       <Card className="lg:col-span-2 bg-white shadow-lg border-0">
         <CardHeader>
           <CardTitle className="text-lg">
-            {format(selectedDate, 'yyyy年MM月dd日', { locale: zhTW })} 的預約
+            {format(selectedDate, 'yyyy年MM月dd日 EEEE', { locale: zhTW })}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -107,64 +106,54 @@ export default function AppointmentCalendar({ appointments, appointmentTypes, on
               <p>此日期沒有預約</p>
             </div>
           ) : (
-            <div className="space-y-3" data-testid="calendar-appointments">
+            <div className="space-y-2" data-testid="calendar-appointments">
               {selectedDateAppointments
                 .sort((a, b) => new Date(a.pickup_time) - new Date(b.pickup_time))
+                .slice(0, 5)
                 .map((appointment) => {
                   const typeInfo = getTypeInfo(appointment.appointment_type_id);
                   const typeStyle = getColorStyle(typeInfo.color);
                   const TypeIcon = LucideIcons[typeInfo.icon] || LucideIcons.Circle;
                   
                   return (
-                    <Card
+                    <div
                       key={appointment.id}
-                      className={`border-l-4 ${typeStyle.border} hover:shadow-md transition-shadow`}
+                      onClick={() => onEdit(appointment)}
+                      className={`p-3 rounded-lg border-l-4 ${typeStyle.border} ${typeStyle.bg} hover:shadow-md transition-all cursor-pointer`}
                       data-testid={`calendar-appointment-${appointment.id}`}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                              <h4 className="font-bold text-gray-900">{appointment.client_name}</h4>
-                              <Badge className={`text-xs ${typeStyle.badge} ${typeStyle.text}`}>
-                                <TypeIcon className="w-3 h-3 mr-1" />
-                                {typeInfo.name}
-                              </Badge>
-                              <Badge className={`status-badge text-xs ${statusConfig[appointment.status]?.color}`}>
-                                {statusConfig[appointment.status]?.label}
-                              </Badge>
-                            </div>
-                            
-                            <div className="space-y-1 text-sm">
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <Clock className="w-4 h-4" />
-                                <span>{formatTime(appointment.pickup_time)} - {formatTime(appointment.arrival_time)}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <MapPin className="w-4 h-4 text-green-600" />
-                                <span>{appointment.pickup_location}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <MapPin className="w-4 h-4 text-red-600" />
-                                <span>{appointment.arrival_location}</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => onEdit(appointment)}
-                            className="ml-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
-                            data-testid={`calendar-edit-${appointment.id}`}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
+                      <div className="flex items-start gap-3">
+                        <div className={`${typeStyle.badge} p-1.5 rounded`}>
+                          <TypeIcon className={`w-4 h-4 ${typeStyle.text}`} />
                         </div>
-                      </CardContent>
-                    </Card>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-gray-900 truncate">{appointment.client_name}</span>
+                            <Badge className={`text-xs ${statusConfig[appointment.status]?.color}`}>
+                              {statusConfig[appointment.status]?.label}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                            <Clock className="w-3 h-3" />
+                            <span>{formatTime(appointment.pickup_time)} - {formatTime(appointment.arrival_time)}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <MapPin className="w-3 h-3 text-green-600" />
+                            <span className="truncate">{appointment.pickup_location}</span>
+                            <span>→</span>
+                            <MapPin className="w-3 h-3 text-red-600" />
+                            <span className="truncate">{appointment.arrival_location}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   );
                 })}
+              {selectedDateAppointments.length > 5 && (
+                <div className="text-center py-2 text-sm text-gray-500">
+                  +{selectedDateAppointments.length - 5} 個更多預約
+                </div>
+              )}
             </div>
           )}
         </CardContent>
