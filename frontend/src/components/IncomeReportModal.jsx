@@ -57,16 +57,46 @@ export default function IncomeReportModal({ onClose }) {
   const fetchStats = async () => {
     setLoading(true);
     try {
+      const params = {
+        start_date: startDate,
+        end_date: endDate
+      };
+      if (selectedType !== 'all') {
+        params.appointment_type_id = selectedType;
+      }
+      
       const response = await axios.get(`${API}/appointments/stats/income`, {
-        params: {
-          start_date: startDate,
-          end_date: endDate
-        },
+        params,
         ...getAuthHeader()
       });
       setStats(response.data);
     } catch (error) {
       toast.error('載入收入統計失敗');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchClientAppointments = async (clientName) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API}/appointments`, getAuthHeader());
+      const appointments = response.data;
+      
+      // Filter appointments for the selected client and date range
+      const filtered = appointments.filter(apt => {
+        const pickupDate = apt.pickup_time.split('T')[0];
+        const matchClient = apt.client_name === clientName;
+        const matchDate = pickupDate >= startDate && pickupDate <= endDate;
+        const matchStatus = apt.status === 'completed';
+        return matchClient && matchDate && matchStatus;
+      });
+      
+      setClientAppointments(filtered);
+      setSelectedClient(clientName);
+      setShowClientDetail(true);
+    } catch (error) {
+      toast.error('載入客戶行程失敗');
     } finally {
       setLoading(false);
     }
