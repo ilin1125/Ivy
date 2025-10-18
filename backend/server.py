@@ -77,7 +77,6 @@ class Appointment(BaseModel):
     arrival_time: str
     arrival_location: str
     flight_info: Optional[str] = ""
-    luggage_passengers: Optional[str] = ""
     other_details: Optional[str] = ""
     appointment_type_id: str
     status: str = "scheduled"
