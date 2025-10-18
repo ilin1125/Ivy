@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, List, Plus, LogOut, Search, Filter, Settings } from 'lucide-react';
+import { Calendar, List, Plus, LogOut, Search, Filter, Settings, DollarSign } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import AppointmentList from '@/components/AppointmentList';
 import AppointmentCalendar from '@/components/AppointmentCalendar';
 import AppointmentModal from '@/components/AppointmentModal';
 import SettingsModal from '@/components/SettingsModal';
+import IncomeReportModal from '@/components/IncomeReportModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
