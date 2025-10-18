@@ -81,7 +81,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="appointment-modal">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-3">
-            {appointment ? '編輯預約' : '新增預約'}
+            {appointment?.id ? '編輯預約' : '新增預約'}
             {selectedType && (
               <Badge className={typeColor?.badge}>
                 <TypeIcon className="w-4 h-4 mr-1" />
