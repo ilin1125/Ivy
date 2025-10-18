@@ -105,6 +105,19 @@ export default function Dashboard({ onLogout }) {
     setShowModal(true);
   };
 
+  const handleCopyAppointment = (appointment) => {
+    // Create a copy without id and timestamps, keeping all other data
+    const copiedData = {
+      ...appointment,
+      id: undefined,
+      created_at: undefined,
+      updated_at: undefined
+    };
+    setEditingAppointment(copiedData);
+    setShowModal(true);
+    toast.info('已複製行程，請修改日期後儲存');
+  };
+
   const handleDeleteAppointment = async (id) => {
     if (!window.confirm('確定要刪除這個預約嗎？')) {
       return;
