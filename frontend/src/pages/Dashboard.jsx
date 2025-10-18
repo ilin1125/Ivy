@@ -297,20 +297,14 @@ export default function Dashboard({ onLogout }) {
         />
       )}
 
-      {showTypeModal && (
-        <TypeManagementModal
+      {showSettingsModal && (
+        <SettingsModal
           types={appointmentTypes}
-          onClose={() => setShowTypeModal(false)}
+          onClose={() => setShowSettingsModal(false)}
           onSave={() => {
             fetchAppointmentTypes();
             fetchAppointments();
           }}
-        />
-      )}
-
-      {showPatternModal && (
-        <PatternSetupModal
-          onClose={() => setShowPatternModal(false)}
         />
       )}
     </div>
