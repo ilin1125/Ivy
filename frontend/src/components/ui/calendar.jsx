@@ -11,10 +11,25 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }) {
+  // 中文月份格式化
+  const formatCaption = (date, options) => {
+    return `${date.getFullYear()}年${date.getMonth() + 1}月`;
+  };
+
+  // 中文星期格式化
+  const formatWeekdayName = (date, options) => {
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+    return weekdays[date.getDay()];
+  };
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
+      formatters={{
+        formatCaption,
+        formatWeekdayName,
+      }}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
