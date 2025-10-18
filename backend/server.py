@@ -78,8 +78,9 @@ class Appointment(BaseModel):
     arrival_location: str
     flight_info: Optional[str] = ""
     other_details: Optional[str] = ""
+    amount: Optional[float] = 0  # 金額
     appointment_type_id: str
-    status: str = "scheduled"
+    status: str = "scheduled"  # scheduled, completed, cancelled
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
