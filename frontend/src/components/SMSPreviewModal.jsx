@@ -2,13 +2,41 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Copy, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 export default function SMSPreviewModal({ appointment, appointmentTypes, onClose }) {
   const [copied, setCopied] = useState(false);
+  const [template, setTemplate] = useState(null);
+
+  const getAuthHeader = () => ({
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+
+  useEffect(() => {
+    fetchTemplate();
+  }, []);
+
+  const fetchTemplate = async () => {
+    try {
+      const response = await axios.get(`${API}/sms-template`, getAuthHeader());
+      setTemplate(response.data);
+    } catch (error) {
+      console.error('Failed to fetch SMS template');
+      // Use default template
+      setTemplate({
+        greeting: '您好，以下是我們接下來的行程：',
+        fields: ['client_name', 'type', 'pickup_time', 'pickup_location', 'arrival_time', 'arrival_location', 'flight_info', 'other_details'],
+        closing: '期待為您服務！'
+      });
+    }
+  };
 
   const formatDateTime = (dateStr) => {
     try {
@@ -23,34 +51,31 @@ export default function SMSPreviewModal({ appointment, appointmentTypes, onClose
     return type ? type.name : '';
   };
 
-  // Generate SMS content
+  // Generate SMS content based on template
   const generateSMS = () => {
-    let sms = `您好，以下是我們接下來的行程：\n\n`;
-    sms += `【客戶】${appointment.client_name}\n`;
+    if (!template) return '';
     
-    const typeName = getTypeName(appointment.appointment_type_id);
-    if (typeName) {
-      sms += `【類型】${typeName}\n`;
-    }
+    let sms = template.greeting + '\n\n';
     
-    sms += `\n【接客時間】${formatDateTime(appointment.pickup_time)}\n`;
-    sms += `【接客地點】${appointment.pickup_location}\n`;
-    sms += `\n【抵達時間】${formatDateTime(appointment.arrival_time)}\n`;
-    sms += `【抵達地點】${appointment.arrival_location}\n`;
+    const fieldData = {
+      'client_name': { label: '客戶', value: appointment.client_name },
+      'type': { label: '類型', value: getTypeName(appointment.appointment_type_id) },
+      'pickup_time': { label: '接客時間', value: formatDateTime(appointment.pickup_time) },
+      'pickup_location': { label: '接客地點', value: appointment.pickup_location },
+      'arrival_time': { label: '抵達時間', value: formatDateTime(appointment.arrival_time) },
+      'arrival_location': { label: '抵達地點', value: appointment.arrival_location },
+      'flight_info': { label: '航班資訊', value: appointment.flight_info },
+      'other_details': { label: '備註', value: appointment.other_details },
+    };
     
-    if (appointment.flight_info) {
-      sms += `\n【航班資訊】${appointment.flight_info}\n`;
-    }
+    template.fields.forEach(fieldId => {
+      const field = fieldData[fieldId];
+      if (field && field.value) {
+        sms += `【${field.label}】${field.value}\n`;
+      }
+    });
     
-    if (appointment.luggage_passengers) {
-      sms += `【行李/人數】${appointment.luggage_passengers}\n`;
-    }
-    
-    if (appointment.other_details) {
-      sms += `\n【備註】${appointment.other_details}\n`;
-    }
-    
-    sms += `\n期待為您服務！`;
+    sms += '\n' + template.closing;
     
     return sms;
   };
@@ -67,6 +92,10 @@ export default function SMSPreviewModal({ appointment, appointmentTypes, onClose
       toast.error('複製失敗，請手動複製');
     }
   };
+
+  if (!template) {
+    return null;
+  }
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
