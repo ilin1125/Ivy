@@ -20,8 +20,7 @@ export default function Dashboard({ onLogout }) {
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [showTypeModal, setShowTypeModal] = useState(false);
-  const [showPatternModal, setShowPatternModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
