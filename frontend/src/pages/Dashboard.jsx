@@ -134,7 +134,7 @@ export default function Dashboard({ onLogout }) {
 
   const handleSaveAppointment = async (appointmentData) => {
     try {
-      if (editingAppointment) {
+      if (editingAppointment?.id) {
         await axios.put(`${API}/appointments/${editingAppointment.id}`, appointmentData, getAuthHeader());
         toast.success('預約已更新');
       } else {
@@ -144,7 +144,7 @@ export default function Dashboard({ onLogout }) {
       setShowModal(false);
       fetchAppointments();
     } catch (error) {
-      toast.error(editingAppointment ? '更新預約失敗' : '新增預約失敗');
+      toast.error(editingAppointment?.id ? '更新預約失敗' : '新增預約失敗');
     }
   };
 
