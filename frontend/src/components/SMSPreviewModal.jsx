@@ -11,6 +11,10 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// 固定的問候語和結語
+const FIXED_GREETING = '您好，以下是我們接下來的行程：';
+const FIXED_CLOSING = '期待為您服務！';
+
 export default function SMSPreviewModal({ appointment, appointmentTypes, onClose }) {
   const [copied, setCopied] = useState(false);
   const [template, setTemplate] = useState(null);
@@ -31,9 +35,9 @@ export default function SMSPreviewModal({ appointment, appointmentTypes, onClose
       console.error('Failed to fetch SMS template');
       // Use default template
       setTemplate({
-        greeting: '您好，以下是我們接下來的行程：',
+        greeting: FIXED_GREETING,
         fields: ['client_name', 'type', 'pickup_time', 'pickup_location', 'arrival_time', 'arrival_location', 'flight_info', 'other_details'],
-        closing: '期待為您服務！'
+        closing: FIXED_CLOSING
       });
     }
   };
@@ -51,11 +55,11 @@ export default function SMSPreviewModal({ appointment, appointmentTypes, onClose
     return type ? type.name : '';
   };
 
-  // Generate SMS content based on template
+  // Generate SMS content based on template with fixed greeting and closing
   const generateSMS = () => {
     if (!template) return '';
     
-    let sms = template.greeting + '\n\n';
+    let sms = FIXED_GREETING + '\n\n';
     
     const fieldData = {
       'client_name': { label: '客戶', value: appointment.client_name },
@@ -75,7 +79,7 @@ export default function SMSPreviewModal({ appointment, appointmentTypes, onClose
       }
     });
     
-    sms += '\n' + template.closing;
+    sms += '\n' + FIXED_CLOSING;
     
     return sms;
   };
