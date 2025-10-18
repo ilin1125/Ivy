@@ -315,6 +315,12 @@ export default function Dashboard({ onLogout }) {
           }}
         />
       )}
+
+      {showPatternModal && (
+        <PatternSetupModal
+          onClose={() => setShowPatternModal(false)}
+        />
+      )}
     </div>
   );
 }
