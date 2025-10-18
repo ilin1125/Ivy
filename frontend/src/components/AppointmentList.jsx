@@ -122,7 +122,7 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                     </Badge>
                   </div>
                 </div>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap max-w-md">
                   {appointment.status === 'scheduled' && (
                     <>
                       <Button
@@ -160,22 +160,22 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => onCopy(appointment)}
-                    className="hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200"
-                    title="複製行程"
-                    data-testid={`copy-button-${appointment.id}`}
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
                     onClick={() => onEdit(appointment)}
                     className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
                     title="編輯"
                     data-testid={`edit-button-${appointment.id}`}
                   >
                     <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onCopy(appointment)}
+                    className="hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200"
+                    title="複製行程"
+                    data-testid={`copy-button-${appointment.id}`}
+                  >
+                    <Copy className="w-4 h-4" />
                   </Button>
                   <Button
                     size="sm"
