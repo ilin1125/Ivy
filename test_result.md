@@ -139,11 +139,11 @@ backend:
 frontend:
   - task: "AppointmentModal表單佈局優化"
     implemented: true
-    working: "NA"
+    working: true
     file: "AppointmentModal.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -152,6 +152,14 @@ frontend:
           - 接客時間和接客地點在同一行
           - 抵達時間和抵達地點在同一行
           - 航班資訊、行李/人數、金額三個欄位在同一行
+      - working: true
+        agent: "testing"
+        comment: |
+          ✅ 表單佈局測試通過
+          - 接客時間和接客地點確實在同一行顯示
+          - 抵達時間和抵達地點確實在同一行顯示
+          - 航班資訊和金額欄位在同一行（行李/人數欄位已按需求移除）
+          - 表單響應式佈局正常，在桌面版顯示為兩欄佈局
 
   - task: "行李/人數欄位重新整合"
     implemented: true
