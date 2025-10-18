@@ -275,6 +275,7 @@ async def get_income_stats(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     client_name: Optional[str] = None,
+    appointment_type_id: Optional[str] = None,
     user=Depends(verify_token)
 ):
     """Get income statistics for completed appointments"""
@@ -291,6 +292,9 @@ async def get_income_stats(
     if client_name:
         query['client_name'] = {"$regex": client_name, "$options": "i"}
     
+    if appointment_type_id:
+        query['appointment_type_id'] = appointment_type_id
+    
     appointments = await db.appointments.find(query, {"_id": 0}).to_list(10000)
     
     # Group by client
@@ -303,14 +307,24 @@ async def get_income_stats(
         client_stats[name]['count'] += 1
         client_stats[name]['total'] += amount
     
+    # Group by type
+    type_stats = {}
+    for apt in appointments:
+        type_id = apt.get('appointment_type_id', 'unknown')
+        amount = apt.get('amount', 0)
+        if type_id not in type_stats:
+            type_stats[type_id] = {'count': 0, 'total': 0}
+        type_stats[type_id]['count'] += 1
+        type_stats[type_id]['total'] += amount
+    
     total_income = sum(apt.get('amount', 0) for apt in appointments)
     total_count = len(appointments)
     
     return {
         "total_income": total_income,
         "total_count": total_count,
-        "average_income": total_income / total_count if total_count > 0 else 0,
-        "by_client": client_stats
+        "by_client": client_stats,
+        "by_type": type_stats
     }
 
 # Include the router in the main app
