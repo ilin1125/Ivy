@@ -49,7 +49,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
         arrival_location: appointment.arrival_location || '',
         flight_info: appointment.flight_info || '',
         other_details: appointment.other_details || '',
-        amount: appointment.amount || 0,
+        amount: appointment.amount || '',
         appointment_type_id: appointment.appointment_type_id || (appointmentTypes[0]?.id || ''),
         status: appointment.status || 'scheduled'
       });
