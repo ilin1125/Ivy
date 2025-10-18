@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MessageSquare, Save } from 'lucide-react';
@@ -23,13 +21,15 @@ const AVAILABLE_FIELDS = [
   { id: 'other_details', label: '備註' },
 ];
 
+// 固定的問候語和結語
+const FIXED_GREETING = '您好，以下是我們接下來的行程：';
+const FIXED_CLOSING = '期待為您服務！';
+
 export default function SMSTemplateContent() {
-  const [greeting, setGreeting] = useState('您好，以下是我們接下來的行程：');
   const [selectedFields, setSelectedFields] = useState([
     'client_name', 'type', 'pickup_time', 'pickup_location',
     'arrival_time', 'arrival_location', 'flight_info', 'other_details'
   ]);
-  const [closing, setClosing] = useState('期待為您服務！');
   const [loading, setLoading] = useState(false);
 
   const getAuthHeader = () => ({
@@ -43,9 +43,7 @@ export default function SMSTemplateContent() {
   const fetchTemplate = async () => {
     try {
       const response = await axios.get(`${API}/sms-template`, getAuthHeader());
-      setGreeting(response.data.greeting);
       setSelectedFields(response.data.fields);
-      setClosing(response.data.closing);
     } catch (error) {
       console.error('Failed to fetch SMS template');
     }
@@ -65,9 +63,9 @@ export default function SMSTemplateContent() {
     setLoading(true);
     try {
       await axios.put(`${API}/sms-template`, {
-        greeting,
+        greeting: FIXED_GREETING,
         fields: selectedFields,
-        closing
+        closing: FIXED_CLOSING
       }, getAuthHeader());
       toast.success('簡訊模板已儲存');
     } catch (error) {
@@ -79,7 +77,7 @@ export default function SMSTemplateContent() {
 
   // Generate preview
   const generatePreview = () => {
-    let preview = greeting + '\n\n';
+    let preview = FIXED_GREETING + '\n\n';
     
     selectedFields.forEach(fieldId => {
       const field = AVAILABLE_FIELDS.find(f => f.id === fieldId);
@@ -88,7 +86,7 @@ export default function SMSTemplateContent() {
       }
     });
     
-    preview += '\n' + closing;
+    preview += '\n' + FIXED_CLOSING;
     return preview;
   };
 
@@ -100,23 +98,20 @@ export default function SMSTemplateContent() {
           客製化簡訊模板
         </h3>
         <p className="text-sm text-gray-600 mb-4">
-          設定傳送給客戶的提醒簡訊格式
+          選擇要在客戶提醒簡訊中顯示的資訊欄位
         </p>
       </div>
 
       <div className="space-y-4">
-        {/* Greeting */}
-        <div className="space-y-2">
-          <Label htmlFor="sms-greeting">問候語</Label>
-          <Textarea
-            id="sms-greeting"
-            value={greeting}
-            onChange={(e) => setGreeting(e.target.value)}
-            rows={2}
-            placeholder="例如：您好，以下是我們接下來的行程："
-            data-testid="sms-greeting"
-          />
-        </div>
+        {/* Fixed Greeting Display */}
+        <Card className="bg-blue-50 border-blue-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">固定問候語</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm font-medium text-gray-700">{FIXED_GREETING}</p>
+          </CardContent>
+        </Card>
 
         {/* Field Selection */}
         <div className="space-y-2">
@@ -148,18 +143,15 @@ export default function SMSTemplateContent() {
           </Card>
         </div>
 
-        {/* Closing */}
-        <div className="space-y-2">
-          <Label htmlFor="sms-closing">結語</Label>
-          <Textarea
-            id="sms-closing"
-            value={closing}
-            onChange={(e) => setClosing(e.target.value)}
-            rows={2}
-            placeholder="例如：期待為您服務！"
-            data-testid="sms-closing"
-          />
-        </div>
+        {/* Fixed Closing Display */}
+        <Card className="bg-green-50 border-green-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">固定結語</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm font-medium text-gray-700">{FIXED_CLOSING}</p>
+          </CardContent>
+        </Card>
 
         {/* Preview */}
         <div className="space-y-2">
