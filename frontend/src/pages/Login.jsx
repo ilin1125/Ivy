@@ -16,6 +16,7 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [hasPattern, setHasPattern] = useState(false);
   const [activeTab, setActiveTab] = useState('password');
+  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     checkPatternStatus();
