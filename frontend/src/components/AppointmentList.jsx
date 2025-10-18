@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, MapPin, Clock, Plane, Briefcase, Calendar, Play, CheckCircle, XCircle } from 'lucide-react';
+import { Edit, Trash2, MapPin, Clock, Plane, Users, Calendar, Play, CheckCircle, XCircle } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
@@ -91,6 +91,13 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                     <h3 className="text-xl font-bold text-gray-900" data-testid={`client-name-${appointment.id}`}>
                       {appointment.client_name}
                     </h3>
+                    {isUpcomingAppt && (
+                      <Badge className="bg-orange-100 text-orange-700 border-orange-200 animate-pulse">
+                        即將到來
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
                     <Badge
                       className={`${typeStyle.badge} ${typeStyle.text} border-0 font-semibold`}
                       data-testid={`type-badge-${appointment.id}`}
@@ -104,11 +111,6 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                     >
                       {statusConfig[appointment.status]?.label || appointment.status}
                     </Badge>
-                    {isUpcomingAppt && (
-                      <Badge className="bg-orange-100 text-orange-700 border-orange-200 animate-pulse">
-                        即將到來
-                      </Badge>
-                    )}
                   </div>
                 </div>
                 <div className="flex gap-2 flex-wrap">
@@ -207,7 +209,7 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                 </div>
               </div>
 
-              {(appointment.flight_info || appointment.luggage_count > 0 || appointment.other_details) && (
+              {(appointment.flight_info || appointment.luggage_passengers || appointment.other_details) && (
                 <div className="border-t pt-4 mt-4 space-y-2">
                   {appointment.flight_info && (
                     <div className="flex items-center gap-2">
@@ -216,11 +218,11 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                       <span className="text-sm font-medium text-gray-900">{appointment.flight_info}</span>
                     </div>
                   )}
-                  {appointment.luggage_count > 0 && (
+                  {appointment.luggage_passengers && (
                     <div className="flex items-center gap-2">
-                      <Briefcase className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">行李數量：</span>
-                      <span className="text-sm font-medium text-gray-900">{appointment.luggage_count} 件</span>
+                      <Users className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-600">行李/人數：</span>
+                      <span className="text-sm font-medium text-gray-900">{appointment.luggage_passengers}</span>
                     </div>
                   )}
                   {appointment.other_details && (
