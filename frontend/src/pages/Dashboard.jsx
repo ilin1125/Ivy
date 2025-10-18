@@ -75,7 +75,18 @@ export default function Dashboard({ onLogout }) {
 
   const fetchIncomeStats = async () => {
     try {
-      const response = await axios.get(`${API}/appointments/stats/income`, getAuthHeader());
+      // Get current month date range
+      const now = new Date();
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      
+      const response = await axios.get(`${API}/appointments/stats/income`, {
+        params: {
+          start_date: firstDay.toISOString().split('T')[0],
+          end_date: lastDay.toISOString().split('T')[0]
+        },
+        ...getAuthHeader()
+      });
       setTotalIncome(response.data.total_income);
     } catch (error) {
       console.error('Failed to fetch income stats');
