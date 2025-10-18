@@ -25,7 +25,7 @@ const COLORS = [
   { value: '#64748b', bg: 'bg-slate-50', border: 'border-slate-600', text: 'text-slate-700', badge: 'bg-slate-100' },
 ];
 
-export default function AppointmentCalendar({ appointments, appointmentTypes, onEdit }) {
+export default function AppointmentCalendar({ appointments, appointmentTypes, onEdit, onCopy }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const getAppointmentsForDate = (date) => {
