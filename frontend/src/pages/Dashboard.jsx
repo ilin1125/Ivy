@@ -201,6 +201,15 @@ export default function Dashboard({ onLogout }) {
             </div>
             <div className="flex gap-2">
               <Button
+                onClick={() => setShowIncomeModal(true)}
+                variant="outline"
+                className="flex items-center gap-2 hover:bg-green-50 hover:text-green-600 hover:border-green-200"
+                data-testid="income-report-button"
+              >
+                <DollarSign className="w-4 h-4" />
+                收入報表
+              </Button>
+              <Button
                 onClick={() => setShowSettingsModal(true)}
                 variant="outline"
                 className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
