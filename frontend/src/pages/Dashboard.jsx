@@ -346,6 +346,12 @@ export default function Dashboard({ onLogout }) {
           }}
         />
       )}
+
+      {showIncomeModal && (
+        <IncomeReportModal
+          onClose={() => setShowIncomeModal(false)}
+        />
+      )}
     </div>
   );
 }
