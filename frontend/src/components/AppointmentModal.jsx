@@ -245,7 +245,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
                 min="0"
                 step="1"
                 value={formData.amount}
-                onChange={(e) => handleChange('amount', parseFloat(e.target.value) || '')}
+                onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
                 placeholder="請輸入金額"
                 data-testid="modal-amount"
               />
