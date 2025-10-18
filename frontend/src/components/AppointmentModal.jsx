@@ -226,7 +226,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
               className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
               data-testid="modal-save"
             >
-              {appointment ? '更新預約' : '新增預約'}
+              {appointment?.id ? '更新預約' : '新增預約'}
             </Button>
           </DialogFooter>
         </form>
