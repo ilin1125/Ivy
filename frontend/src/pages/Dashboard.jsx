@@ -26,6 +26,7 @@ export default function Dashboard({ onLogout }) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('list');
+  const [totalIncome, setTotalIncome] = useState(0);
 
   useEffect(() => {
     fetchAppointmentTypes();
