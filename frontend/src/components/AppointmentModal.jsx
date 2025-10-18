@@ -62,6 +62,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
       ...formData,
       pickup_time: new Date(formData.pickup_time).toISOString(),
       arrival_time: new Date(formData.arrival_time).toISOString(),
+      amount: formData.amount === '' || formData.amount === null || formData.amount === undefined ? 0 : Number(formData.amount)
     };
     onSave(submitData);
   };
