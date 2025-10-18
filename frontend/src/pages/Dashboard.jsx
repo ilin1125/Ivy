@@ -201,7 +201,7 @@ export default function Dashboard({ onLogout }) {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900" data-testid="dashboard-title">
-                輝哥預約管理
+                駕駛預約管理
               </h1>
               <p className="text-sm text-gray-600 mt-1">
                 即將到來的預約：<span className="font-semibold text-blue-600">{getUpcomingCount()}</span> 個
