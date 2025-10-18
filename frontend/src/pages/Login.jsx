@@ -41,6 +41,9 @@ export default function Login({ onLogin }) {
     try {
       const response = await axios.post(`${API}/auth/login`, { password });
       toast.success('登入成功！');
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      }
       onLogin(response.data.token);
     } catch (error) {
       toast.error('密碼錯誤，請重試');
