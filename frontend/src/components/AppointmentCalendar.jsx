@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, Edit, Copy } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 const statusConfig = {
