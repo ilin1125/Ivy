@@ -67,7 +67,39 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
   };
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      
+      // 當接客日期改變時，自動更新抵達日期為同一天，但保持原有時間
+      if (field === 'pickup_time' && prev.arrival_time) {
+        try {
+          const newPickupDate = new Date(value);
+          const oldArrivalDate = new Date(prev.arrival_time);
+          
+          // 設置抵達日期為接客日期，但保持原有時間
+          const newArrivalDate = new Date(
+            newPickupDate.getFullYear(),
+            newPickupDate.getMonth(),
+            newPickupDate.getDate(),
+            oldArrivalDate.getHours(),
+            oldArrivalDate.getMinutes()
+          );
+          
+          // 轉換為 datetime-local 格式
+          const year = newArrivalDate.getFullYear();
+          const month = String(newArrivalDate.getMonth() + 1).padStart(2, '0');
+          const day = String(newArrivalDate.getDate()).padStart(2, '0');
+          const hours = String(newArrivalDate.getHours()).padStart(2, '0');
+          const minutes = String(newArrivalDate.getMinutes()).padStart(2, '0');
+          
+          updated.arrival_time = `${year}-${month}-${day}T${hours}:${minutes}`;
+        } catch (e) {
+          console.error('Date sync error:', e);
+        }
+      }
+      
+      return updated;
+    });
   };
 
   const getSelectedType = () => {
