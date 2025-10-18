@@ -47,7 +47,6 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
         arrival_time: appointment.arrival_time ? appointment.arrival_time.slice(0, 16) : '',
         arrival_location: appointment.arrival_location || '',
         flight_info: appointment.flight_info || '',
-        luggage_passengers: appointment.luggage_passengers || '',
         other_details: appointment.other_details || '',
         appointment_type_id: appointment.appointment_type_id || (appointmentTypes[0]?.id || ''),
         status: appointment.status || 'scheduled'
