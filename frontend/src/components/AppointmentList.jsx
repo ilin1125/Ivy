@@ -175,14 +175,14 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                   <div className="flex items-start gap-2">
                     <MapPin className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-xs text-gray-500">接送地點</p>
+                      <p className="text-xs text-gray-500">接客地點</p>
                       <p className="font-medium text-gray-900">{appointment.pickup_location}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <Clock className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-xs text-gray-500">接送時間</p>
+                      <p className="text-xs text-gray-500">接客時間</p>
                       <p className="font-medium text-gray-900">{formatDateTime(appointment.pickup_time)}</p>
                     </div>
                   </div>
