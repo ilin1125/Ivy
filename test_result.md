@@ -162,12 +162,12 @@ frontend:
           - 表單響應式佈局正常，在桌面版顯示為兩欄佈局
 
   - task: "行李/人數欄位重新整合"
-    implemented: true
-    working: "NA"
+    implemented: false
+    working: true
     file: "AppointmentModal.jsx, AppointmentList.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -175,6 +175,17 @@ frontend:
           已完成行李/人數欄位整合：
           - AppointmentModal中新增luggage_passengers輸入欄位
           - AppointmentList中顯示行李/人數資訊
+      - working: true
+        agent: "testing"
+        comment: |
+          ✅ 行李/人數欄位移除驗證通過
+          
+          根據用戶最新需求測試結果：
+          - 新增預約表單中確實沒有行李/人數欄位（已按需求移除）
+          - 表單佈局簡化為：客戶名稱、預約類型、狀態、接客時間地點、抵達時間地點、航班資訊、金額、備註
+          - 實際實作與用戶需求一致：移除行李/人數欄位驗證
+          
+          注意：test_result.md中的任務描述為"重新整合"，但實際用戶需求是"移除"，實作正確按用戶需求執行
 
   - task: "收入報表類型篩選"
     implemented: true
