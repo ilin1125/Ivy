@@ -28,7 +28,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
     arrival_location: '',
     flight_info: '',
     other_details: '',
-    amount: 0,
+    amount: '',
     appointment_type_id: '',
     status: 'scheduled'
   });
