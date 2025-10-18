@@ -6,16 +6,20 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import * as LucideIcons from 'lucide-react';
 
-const typeConfig = {
-  airport: { label: '機場接送', color: 'bg-purple-100 text-purple-700' },
-  city: { label: '市區接送', color: 'bg-cyan-100 text-cyan-700' },
-  corporate: { label: '商務用車', color: 'bg-slate-100 text-slate-700' },
-  personal: { label: '私人行程', color: 'bg-emerald-100 text-emerald-700' },
-  vip: { label: 'VIP 專屬', color: 'bg-amber-100 text-amber-700' },
-};
+const COLORS = [
+  { value: '#9333ea', badge: 'bg-purple-100 text-purple-700' },
+  { value: '#3b82f6', badge: 'bg-blue-100 text-blue-700' },
+  { value: '#06b6d4', badge: 'bg-cyan-100 text-cyan-700' },
+  { value: '#10b981', badge: 'bg-emerald-100 text-emerald-700' },
+  { value: '#f59e0b', badge: 'bg-amber-100 text-amber-700' },
+  { value: '#ef4444', badge: 'bg-red-100 text-red-700' },
+  { value: '#ec4899', badge: 'bg-pink-100 text-pink-700' },
+  { value: '#64748b', badge: 'bg-slate-100 text-slate-700' },
+];
 
-export default function AppointmentModal({ appointment, onClose, onSave }) {
+export default function AppointmentModal({ appointment, appointmentTypes, onClose, onSave }) {
   const [formData, setFormData] = useState({
     client_name: '',
     pickup_time: '',
@@ -25,9 +29,15 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
     flight_info: '',
     luggage_count: 0,
     other_details: '',
-    appointment_type: 'airport',
+    appointment_type_id: '',
     status: 'scheduled'
   });
+
+  useEffect(() => {
+    if (appointmentTypes.length > 0 && !appointment) {
+      setFormData(prev => ({ ...prev, appointment_type_id: appointmentTypes[0].id }));
+    }
+  }, [appointmentTypes, appointment]);
 
   useEffect(() => {
     if (appointment) {
@@ -40,11 +50,11 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
         flight_info: appointment.flight_info || '',
         luggage_count: appointment.luggage_count || 0,
         other_details: appointment.other_details || '',
-        appointment_type: appointment.appointment_type || 'airport',
+        appointment_type_id: appointment.appointment_type_id || (appointmentTypes[0]?.id || ''),
         status: appointment.status || 'scheduled'
       });
     }
-  }, [appointment]);
+  }, [appointment, appointmentTypes]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,15 +70,24 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const getSelectedType = () => {
+    return appointmentTypes.find(t => t.id === formData.appointment_type_id);
+  };
+
+  const selectedType = getSelectedType();
+  const TypeIcon = selectedType ? LucideIcons[selectedType.icon] || LucideIcons.Circle : LucideIcons.Circle;
+  const typeColor = selectedType ? COLORS.find(c => c.value === selectedType.color) : COLORS[0];
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="appointment-modal">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-3">
             {appointment ? '編輯預約' : '新增預約'}
-            {formData.appointment_type && (
-              <Badge className={typeConfig[formData.appointment_type].color}>
-                {typeConfig[formData.appointment_type].label}
+            {selectedType && (
+              <Badge className={typeColor?.badge}>
+                <TypeIcon className="w-4 h-4 mr-1" />
+                {selectedType.name}
               </Badge>
             )}
           </DialogTitle>
@@ -88,17 +107,23 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="appointment_type">預約類型 *</Label>
-              <Select value={formData.appointment_type} onValueChange={(value) => handleChange('appointment_type', value)}>
+              <Label htmlFor="appointment_type_id">預約類型 *</Label>
+              <Select value={formData.appointment_type_id} onValueChange={(value) => handleChange('appointment_type_id', value)}>
                 <SelectTrigger data-testid="modal-appointment-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="airport">🛫 機場接送</SelectItem>
-                  <SelectItem value="city">🚗 市區接送</SelectItem>
-                  <SelectItem value="corporate">💼 商務用車</SelectItem>
-                  <SelectItem value="personal">👤 私人行程</SelectItem>
-                  <SelectItem value="vip">⭐ VIP 專屬</SelectItem>
+                  {appointmentTypes.map(type => {
+                    const Icon = LucideIcons[type.icon] || LucideIcons.Circle;
+                    return (
+                      <SelectItem key={type.id} value={type.id}>
+                        <div className="flex items-center gap-2">
+                          <Icon className="w-4 h-4" />
+                          {type.name}
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>

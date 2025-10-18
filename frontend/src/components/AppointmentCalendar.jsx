@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { Clock, MapPin, Edit } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 const statusConfig = {
   scheduled: { label: '已排程', color: 'bg-blue-100 text-blue-700 border-blue-200' },
@@ -14,15 +15,18 @@ const statusConfig = {
   cancelled: { label: '已取消', color: 'bg-red-100 text-red-700 border-red-200' },
 };
 
-const typeConfig = {
-  airport: { label: '機場接送', color: 'bg-purple-100 text-purple-700 border-purple-300' },
-  city: { label: '市區接送', color: 'bg-cyan-100 text-cyan-700 border-cyan-300' },
-  corporate: { label: '商務用車', color: 'bg-slate-100 text-slate-700 border-slate-300' },
-  personal: { label: '私人行程', color: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
-  vip: { label: 'VIP 專屬', color: 'bg-amber-100 text-amber-700 border-amber-300' },
-};
+const COLORS = [
+  { value: '#9333ea', bg: 'bg-purple-50', border: 'border-purple-500', text: 'text-purple-700', badge: 'bg-purple-100' },
+  { value: '#3b82f6', bg: 'bg-blue-50', border: 'border-blue-500', text: 'text-blue-700', badge: 'bg-blue-100' },
+  { value: '#06b6d4', bg: 'bg-cyan-50', border: 'border-cyan-500', text: 'text-cyan-700', badge: 'bg-cyan-100' },
+  { value: '#10b981', bg: 'bg-emerald-50', border: 'border-emerald-500', text: 'text-emerald-700', badge: 'bg-emerald-100' },
+  { value: '#f59e0b', bg: 'bg-amber-50', border: 'border-amber-500', text: 'text-amber-700', badge: 'bg-amber-100' },
+  { value: '#ef4444', bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-700', badge: 'bg-red-100' },
+  { value: '#ec4899', bg: 'bg-pink-50', border: 'border-pink-500', text: 'text-pink-700', badge: 'bg-pink-100' },
+  { value: '#64748b', bg: 'bg-slate-50', border: 'border-slate-600', text: 'text-slate-700', badge: 'bg-slate-100' },
+];
 
-export default function AppointmentCalendar({ appointments, onEdit }) {
+export default function AppointmentCalendar({ appointments, appointmentTypes, onEdit }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const getAppointmentsForDate = (date) => {
@@ -40,7 +44,17 @@ export default function AppointmentCalendar({ appointments, onEdit }) {
     }
   };
 
-  // Get dates that have appointments
+  const getTypeInfo = (typeId) => {
+    const type = appointmentTypes.find(t => t.id === typeId);
+    if (!type) return { name: '未知', icon: 'Circle', color: '#64748b' };
+    return type;
+  };
+
+  const getColorStyle = (colorValue) => {
+    const color = COLORS.find(c => c.value === colorValue);
+    return color || COLORS[0];
+  };
+
   const appointmentDates = appointments.map(apt => {
     try {
       return new Date(apt.pickup_time.split('T')[0]);
@@ -97,12 +111,14 @@ export default function AppointmentCalendar({ appointments, onEdit }) {
               {selectedDateAppointments
                 .sort((a, b) => new Date(a.pickup_time) - new Date(b.pickup_time))
                 .map((appointment) => {
-                  const typeStyle = typeConfig[appointment.appointment_type] || typeConfig.city;
+                  const typeInfo = getTypeInfo(appointment.appointment_type_id);
+                  const typeStyle = getColorStyle(typeInfo.color);
+                  const TypeIcon = LucideIcons[typeInfo.icon] || LucideIcons.Circle;
                   
                   return (
                     <Card
                       key={appointment.id}
-                      className={`border-l-4 ${typeStyle.color.includes('purple') ? 'border-l-purple-500' : typeStyle.color.includes('cyan') ? 'border-l-cyan-500' : typeStyle.color.includes('slate') ? 'border-l-slate-600' : typeStyle.color.includes('emerald') ? 'border-l-emerald-500' : 'border-l-amber-500'} hover:shadow-md transition-shadow`}
+                      className={`border-l-4 ${typeStyle.border} hover:shadow-md transition-shadow`}
                       data-testid={`calendar-appointment-${appointment.id}`}
                     >
                       <CardContent className="p-4">
@@ -110,8 +126,9 @@ export default function AppointmentCalendar({ appointments, onEdit }) {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <h4 className="font-bold text-gray-900">{appointment.client_name}</h4>
-                              <Badge className={`text-xs ${typeStyle.color}`}>
-                                {typeStyle.label}
+                              <Badge className={`text-xs ${typeStyle.badge} ${typeStyle.text}`}>
+                                <TypeIcon className="w-3 h-3 mr-1" />
+                                {typeInfo.name}
                               </Badge>
                               <Badge className={`status-badge text-xs ${statusConfig[appointment.status]?.color}`}>
                                 {statusConfig[appointment.status]?.label}

@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, MapPin, Clock, Plane, Briefcase, Calendar, Play, CheckCircle, XCircle } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
@@ -12,40 +13,18 @@ const statusConfig = {
   cancelled: { label: '已取消', color: 'bg-red-100 text-red-700 border-red-200' },
 };
 
-const typeConfig = {
-  airport: {
-    label: '機場接送',
-    color: 'bg-purple-50 border-l-4 border-purple-500',
-    accentColor: 'text-purple-700',
-    bgColor: 'bg-purple-100'
-  },
-  city: {
-    label: '市區接送',
-    color: 'bg-cyan-50 border-l-4 border-cyan-500',
-    accentColor: 'text-cyan-700',
-    bgColor: 'bg-cyan-100'
-  },
-  corporate: {
-    label: '商務用車',
-    color: 'bg-slate-50 border-l-4 border-slate-600',
-    accentColor: 'text-slate-700',
-    bgColor: 'bg-slate-100'
-  },
-  personal: {
-    label: '私人行程',
-    color: 'bg-emerald-50 border-l-4 border-emerald-500',
-    accentColor: 'text-emerald-700',
-    bgColor: 'bg-emerald-100'
-  },
-  vip: {
-    label: 'VIP 專屬',
-    color: 'bg-amber-50 border-l-4 border-amber-500',
-    accentColor: 'text-amber-700',
-    bgColor: 'bg-amber-100'
-  },
-};
+const COLORS = [
+  { value: '#9333ea', bg: 'bg-purple-50', border: 'border-purple-500', text: 'text-purple-700', badge: 'bg-purple-100' },
+  { value: '#3b82f6', bg: 'bg-blue-50', border: 'border-blue-500', text: 'text-blue-700', badge: 'bg-blue-100' },
+  { value: '#06b6d4', bg: 'bg-cyan-50', border: 'border-cyan-500', text: 'text-cyan-700', badge: 'bg-cyan-100' },
+  { value: '#10b981', bg: 'bg-emerald-50', border: 'border-emerald-500', text: 'text-emerald-700', badge: 'bg-emerald-100' },
+  { value: '#f59e0b', bg: 'bg-amber-50', border: 'border-amber-500', text: 'text-amber-700', badge: 'bg-amber-100' },
+  { value: '#ef4444', bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-700', badge: 'bg-red-100' },
+  { value: '#ec4899', bg: 'bg-pink-50', border: 'border-pink-500', text: 'text-pink-700', badge: 'bg-pink-100' },
+  { value: '#64748b', bg: 'bg-slate-50', border: 'border-slate-600', text: 'text-slate-700', badge: 'bg-slate-100' },
+];
 
-export default function AppointmentList({ appointments, onEdit, onDelete, onQuickStatusChange }) {
+export default function AppointmentList({ appointments, appointmentTypes, onEdit, onDelete, onQuickStatusChange }) {
   const formatDateTime = (dateStr) => {
     try {
       return format(new Date(dateStr), 'MM/dd HH:mm', { locale: zhTW });
@@ -58,6 +37,17 @@ export default function AppointmentList({ appointments, onEdit, onDelete, onQuic
     const now = new Date();
     const appointmentDate = new Date(dateStr);
     return appointmentDate > now;
+  };
+
+  const getTypeInfo = (typeId) => {
+    const type = appointmentTypes.find(t => t.id === typeId);
+    if (!type) return { name: '未知', icon: 'Circle', color: '#64748b' };
+    return type;
+  };
+
+  const getColorStyle = (colorValue) => {
+    const color = COLORS.find(c => c.value === colorValue);
+    return color || COLORS[0];
   };
 
   if (appointments.length === 0) {
@@ -78,13 +68,17 @@ export default function AppointmentList({ appointments, onEdit, onDelete, onQuic
     <div className="space-y-4" data-testid="appointments-list">
       {appointments.map((appointment) => {
         const isUpcomingAppt = isUpcoming(appointment.pickup_time) && appointment.status === 'scheduled';
-        const typeStyle = typeConfig[appointment.appointment_type] || typeConfig.city;
+        const typeInfo = getTypeInfo(appointment.appointment_type_id);
+        const typeStyle = getColorStyle(typeInfo.color);
+        const TypeIcon = LucideIcons[typeInfo.icon] || LucideIcons.Circle;
         
         return (
           <Card
             key={appointment.id}
             className={`bg-white shadow-lg border-0 hover:shadow-xl transition-all card-enter ${
-              typeStyle.color
+              typeStyle.bg
+            } border-l-4 ${
+              typeStyle.border
             } ${
               isUpcomingAppt ? 'ring-2 ring-blue-400 ring-opacity-50' : ''
             }`}
@@ -98,10 +92,11 @@ export default function AppointmentList({ appointments, onEdit, onDelete, onQuic
                       {appointment.client_name}
                     </h3>
                     <Badge
-                      className={`${typeStyle.bgColor} ${typeStyle.accentColor} border-0 font-semibold`}
+                      className={`${typeStyle.badge} ${typeStyle.text} border-0 font-semibold`}
                       data-testid={`type-badge-${appointment.id}`}
                     >
-                      {typeStyle.label}
+                      <TypeIcon className="w-4 h-4 mr-1" />
+                      {typeInfo.name}
                     </Badge>
                     <Badge
                       className={`status-badge ${statusConfig[appointment.status]?.color || statusConfig.scheduled.color}`}
@@ -116,7 +111,7 @@ export default function AppointmentList({ appointments, onEdit, onDelete, onQuic
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {appointment.status === 'scheduled' && (
                     <Button
                       size="sm"
