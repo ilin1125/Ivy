@@ -114,6 +114,19 @@ export default function Login({ onLogin }) {
                     />
                   </div>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="remember-me"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    data-testid="remember-me-checkbox"
+                  />
+                  <label htmlFor="remember-me" className="text-sm text-gray-700 cursor-pointer">
+                    記住我（下次自動登入）
+                  </label>
+                </div>
                 <Button
                   type="submit"
                   className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium text-base shadow-lg btn-hover"
