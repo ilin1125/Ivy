@@ -35,19 +35,26 @@ api_router = APIRouter(prefix="/api")
 
 # Define Models
 class LoginRequest(BaseModel):
-    password: str
+    password: Optional[str] = None
+    pattern: Optional[List[int]] = None  # Pattern lock as list of dot indices
+
+class PatternSetupRequest(BaseModel):
+    pattern: List[int]
 
 class LoginResponse(BaseModel):
     token: str
     message: str
+
+class PatternStatusResponse(BaseModel):
+    has_pattern: bool
 
 class AppointmentType(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    color: str  # hex color or tailwind class
-    icon: str  # icon name from lucide-react
+    color: str
+    icon: str
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class AppointmentTypeCreate(BaseModel):
@@ -65,15 +72,15 @@ class Appointment(BaseModel):
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
-    pickup_time: str  # ISO datetime string
+    pickup_time: str
     pickup_location: str
-    arrival_time: str  # ISO datetime string
+    arrival_time: str
     arrival_location: str
     flight_info: Optional[str] = ""
-    luggage_passengers: Optional[str] = ""  # Changed from luggage_count to luggage_passengers
+    luggage_passengers: Optional[str] = ""
     other_details: Optional[str] = ""
     appointment_type_id: str
-    status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
+    status: str = "scheduled"
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -112,17 +119,49 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-# Authentication endpoint
+# Authentication endpoints
 @api_router.post("/auth/login", response_model=LoginResponse)
 async def login(request: LoginRequest):
     correct_password = "driver123"
     
-    if request.password != correct_password:
-        raise HTTPException(status_code=401, detail="Invalid password")
+    # Get stored pattern from database
+    auth_config = await db.auth_config.find_one({"user": "driver"})
+    
+    # Check password login
+    if request.password:
+        if request.password != correct_password:
+            raise HTTPException(status_code=401, detail="Invalid password")
+    # Check pattern login
+    elif request.pattern:
+        if not auth_config or "pattern" not in auth_config:
+            raise HTTPException(status_code=401, detail="Pattern not set up")
+        if request.pattern != auth_config["pattern"]:
+            raise HTTPException(status_code=401, detail="Invalid pattern")
+    else:
+        raise HTTPException(status_code=400, detail="Password or pattern required")
     
     token = jwt.encode({"user": "driver", "exp": datetime.now(timezone.utc).timestamp() + 86400 * 30}, SECRET_KEY, algorithm=ALGORITHM)
     
     return LoginResponse(token=token, message="Login successful")
+
+@api_router.get("/auth/pattern-status", response_model=PatternStatusResponse)
+async def get_pattern_status():
+    auth_config = await db.auth_config.find_one({"user": "driver"})
+    has_pattern = auth_config is not None and "pattern" in auth_config
+    return PatternStatusResponse(has_pattern=has_pattern)
+
+@api_router.post("/auth/setup-pattern")
+async def setup_pattern(request: PatternSetupRequest, user=Depends(verify_token)):
+    if len(request.pattern) < 4:
+        raise HTTPException(status_code=400, detail="Pattern must have at least 4 dots")
+    
+    await db.auth_config.update_one(
+        {"user": "driver"},
+        {"$set": {"pattern": request.pattern, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        upsert=True
+    )
+    
+    return {"message": "Pattern setup successful"}
 
 # Appointment Types endpoints
 @api_router.post("/appointment-types", response_model=AppointmentType)
@@ -154,7 +193,6 @@ async def update_appointment_type(type_id: str, type_update: AppointmentTypeUpda
 
 @api_router.delete("/appointment-types/{type_id}")
 async def delete_appointment_type(type_id: str, user=Depends(verify_token)):
-    # Check if any appointments use this type
     appointments_count = await db.appointments.count_documents({"appointment_type_id": type_id})
     if appointments_count > 0:
         raise HTTPException(status_code=400, detail=f"Cannot delete: {appointments_count} appointments still use this type")
