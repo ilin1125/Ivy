@@ -122,11 +122,6 @@ export default function IncomeReportModal({ onClose }) {
 
   const clientDetailTotal = clientAppointments.reduce((sum, apt) => sum + (apt.amount || 0), 0);
 
-  // 確保日期已初始化
-  if (!startDate || !endDate) {
-    return null;
-  }
-
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" data-testid="income-report-modal">
