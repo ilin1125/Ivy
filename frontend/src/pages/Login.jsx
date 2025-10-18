@@ -58,6 +58,9 @@ export default function Login({ onLogin }) {
     try {
       const response = await axios.post(`${API}/auth/login`, { pattern });
       toast.success('登入成功！');
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      }
       onLogin(response.data.token);
     } catch (error) {
       toast.error('圖案錯誤，請重試');
