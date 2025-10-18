@@ -5,6 +5,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+
+const typeConfig = {
+  airport: { label: '機場接送', color: 'bg-purple-100 text-purple-700' },
+  city: { label: '市區接送', color: 'bg-cyan-100 text-cyan-700' },
+  corporate: { label: '商務用車', color: 'bg-slate-100 text-slate-700' },
+  personal: { label: '私人行程', color: 'bg-emerald-100 text-emerald-700' },
+  vip: { label: 'VIP 專屬', color: 'bg-amber-100 text-amber-700' },
+};
 
 export default function AppointmentModal({ appointment, onClose, onSave }) {
   const [formData, setFormData] = useState({
@@ -16,6 +25,7 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
     flight_info: '',
     luggage_count: 0,
     other_details: '',
+    appointment_type: 'airport',
     status: 'scheduled'
   });
 
@@ -30,6 +40,7 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
         flight_info: appointment.flight_info || '',
         luggage_count: appointment.luggage_count || 0,
         other_details: appointment.other_details || '',
+        appointment_type: appointment.appointment_type || 'airport',
         status: appointment.status || 'scheduled'
       });
     }
@@ -53,8 +64,13 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="appointment-modal">
         <DialogHeader>
-          <DialogTitle className="text-2xl">
+          <DialogTitle className="text-2xl flex items-center gap-3">
             {appointment ? '編輯預約' : '新增預約'}
+            {formData.appointment_type && (
+              <Badge className={typeConfig[formData.appointment_type].color}>
+                {typeConfig[formData.appointment_type].label}
+              </Badge>
+            )}
           </DialogTitle>
         </DialogHeader>
         
@@ -72,16 +88,17 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">狀態</Label>
-              <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
-                <SelectTrigger data-testid="modal-status">
+              <Label htmlFor="appointment_type">預約類型 *</Label>
+              <Select value={formData.appointment_type} onValueChange={(value) => handleChange('appointment_type', value)}>
+                <SelectTrigger data-testid="modal-appointment-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="scheduled">已排程</SelectItem>
-                  <SelectItem value="in_progress">進行中</SelectItem>
-                  <SelectItem value="completed">已完成</SelectItem>
-                  <SelectItem value="cancelled">已取消</SelectItem>
+                  <SelectItem value="airport">🛫 機場接送</SelectItem>
+                  <SelectItem value="city">🚗 市區接送</SelectItem>
+                  <SelectItem value="corporate">💼 商務用車</SelectItem>
+                  <SelectItem value="personal">👤 私人行程</SelectItem>
+                  <SelectItem value="vip">⭐ VIP 專屬</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -163,6 +180,21 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="status">狀態</Label>
+            <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
+              <SelectTrigger data-testid="modal-status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="scheduled">已排程</SelectItem>
+                <SelectItem value="in_progress">進行中</SelectItem>
+                <SelectItem value="completed">已完成</SelectItem>
+                <SelectItem value="cancelled">已取消</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="other_details">其他備註</Label>
             <Textarea
               id="other_details"
@@ -183,7 +215,7 @@ export default function AppointmentModal({ appointment, onClose, onSave }) {
               className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
               data-testid="modal-save"
             >
-              {appointment ? '更新' : '新增'}
+              {appointment ? '更新預約' : '新增預約'}
             </Button>
           </DialogFooter>
         </form>

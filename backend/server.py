@@ -53,6 +53,7 @@ class Appointment(BaseModel):
     flight_info: Optional[str] = ""
     luggage_count: Optional[int] = 0
     other_details: Optional[str] = ""
+    appointment_type: str = "airport"  # airport, city, corporate, personal, vip
     status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -66,6 +67,7 @@ class AppointmentCreate(BaseModel):
     flight_info: Optional[str] = ""
     luggage_count: Optional[int] = 0
     other_details: Optional[str] = ""
+    appointment_type: Optional[str] = "airport"
     status: Optional[str] = "scheduled"
 
 class AppointmentUpdate(BaseModel):
@@ -77,6 +79,7 @@ class AppointmentUpdate(BaseModel):
     flight_info: Optional[str] = None
     luggage_count: Optional[int] = None
     other_details: Optional[str] = None
+    appointment_type: Optional[str] = None
     status: Optional[str] = None
 
 # Authentication function
@@ -121,6 +124,7 @@ async def get_appointments(
     status: Optional[str] = None,
     client_name: Optional[str] = None,
     date: Optional[str] = None,
+    appointment_type: Optional[str] = None,
     user=Depends(verify_token)
 ):
     query = {}
@@ -132,6 +136,8 @@ async def get_appointments(
     if date:
         # Filter by date (pickup_time starts with the date)
         query['pickup_time'] = {"$regex": f"^{date}"}
+    if appointment_type:
+        query['appointment_type'] = appointment_type
     
     appointments = await db.appointments.find(query, {"_id": 0}).to_list(1000)
     return appointments

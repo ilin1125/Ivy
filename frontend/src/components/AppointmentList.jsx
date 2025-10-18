@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, MapPin, Clock, Plane, Briefcase, Calendar } from 'lucide-react';
+import { Edit, Trash2, MapPin, Clock, Plane, Briefcase, Calendar, Play, CheckCircle, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
@@ -12,10 +12,43 @@ const statusConfig = {
   cancelled: { label: '已取消', color: 'bg-red-100 text-red-700 border-red-200' },
 };
 
-export default function AppointmentList({ appointments, onEdit, onDelete }) {
+const typeConfig = {
+  airport: {
+    label: '機場接送',
+    color: 'bg-purple-50 border-l-4 border-purple-500',
+    accentColor: 'text-purple-700',
+    bgColor: 'bg-purple-100'
+  },
+  city: {
+    label: '市區接送',
+    color: 'bg-cyan-50 border-l-4 border-cyan-500',
+    accentColor: 'text-cyan-700',
+    bgColor: 'bg-cyan-100'
+  },
+  corporate: {
+    label: '商務用車',
+    color: 'bg-slate-50 border-l-4 border-slate-600',
+    accentColor: 'text-slate-700',
+    bgColor: 'bg-slate-100'
+  },
+  personal: {
+    label: '私人行程',
+    color: 'bg-emerald-50 border-l-4 border-emerald-500',
+    accentColor: 'text-emerald-700',
+    bgColor: 'bg-emerald-100'
+  },
+  vip: {
+    label: 'VIP 專屬',
+    color: 'bg-amber-50 border-l-4 border-amber-500',
+    accentColor: 'text-amber-700',
+    bgColor: 'bg-amber-100'
+  },
+};
+
+export default function AppointmentList({ appointments, onEdit, onDelete, onQuickStatusChange }) {
   const formatDateTime = (dateStr) => {
     try {
-      return format(new Date(dateStr), 'yyyy/MM/dd HH:mm', { locale: zhTW });
+      return format(new Date(dateStr), 'MM/dd HH:mm', { locale: zhTW });
     } catch {
       return dateStr;
     }
@@ -45,11 +78,14 @@ export default function AppointmentList({ appointments, onEdit, onDelete }) {
     <div className="space-y-4" data-testid="appointments-list">
       {appointments.map((appointment) => {
         const isUpcomingAppt = isUpcoming(appointment.pickup_time) && appointment.status === 'scheduled';
+        const typeStyle = typeConfig[appointment.appointment_type] || typeConfig.city;
         
         return (
           <Card
             key={appointment.id}
-            className={`bg-white shadow-lg border-0 hover:shadow-xl transition-shadow card-enter ${
+            className={`bg-white shadow-lg border-0 hover:shadow-xl transition-all card-enter ${
+              typeStyle.color
+            } ${
               isUpcomingAppt ? 'ring-2 ring-blue-400 ring-opacity-50' : ''
             }`}
             data-testid={`appointment-card-${appointment.id}`}
@@ -57,10 +93,16 @@ export default function AppointmentList({ appointments, onEdit, onDelete }) {
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <h3 className="text-xl font-bold text-gray-900" data-testid={`client-name-${appointment.id}`}>
                       {appointment.client_name}
                     </h3>
+                    <Badge
+                      className={`${typeStyle.bgColor} ${typeStyle.accentColor} border-0 font-semibold`}
+                      data-testid={`type-badge-${appointment.id}`}
+                    >
+                      {typeStyle.label}
+                    </Badge>
                     <Badge
                       className={`status-badge ${statusConfig[appointment.status]?.color || statusConfig.scheduled.color}`}
                       data-testid={`status-badge-${appointment.id}`}
@@ -68,18 +110,55 @@ export default function AppointmentList({ appointments, onEdit, onDelete }) {
                       {statusConfig[appointment.status]?.label || appointment.status}
                     </Badge>
                     {isUpcomingAppt && (
-                      <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+                      <Badge className="bg-orange-100 text-orange-700 border-orange-200 animate-pulse">
                         即將到來
                       </Badge>
                     )}
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  {appointment.status === 'scheduled' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onQuickStatusChange(appointment.id, 'in_progress')}
+                      className="hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-200"
+                      title="開始行程"
+                      data-testid={`start-button-${appointment.id}`}
+                    >
+                      <Play className="w-4 h-4" />
+                    </Button>
+                  )}
+                  {appointment.status === 'in_progress' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onQuickStatusChange(appointment.id, 'completed')}
+                      className="hover:bg-green-50 hover:text-green-600 hover:border-green-200"
+                      title="完成行程"
+                      data-testid={`complete-button-${appointment.id}`}
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                    </Button>
+                  )}
+                  {(appointment.status === 'scheduled' || appointment.status === 'in_progress') && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onQuickStatusChange(appointment.id, 'cancelled')}
+                      className="hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                      title="取消行程"
+                      data-testid={`cancel-button-${appointment.id}`}
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </Button>
+                  )}
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => onEdit(appointment)}
                     className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                    title="編輯"
                     data-testid={`edit-button-${appointment.id}`}
                   >
                     <Edit className="w-4 h-4" />
@@ -89,6 +168,7 @@ export default function AppointmentList({ appointments, onEdit, onDelete }) {
                     variant="outline"
                     onClick={() => onDelete(appointment.id)}
                     className="hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                    title="刪除"
                     data-testid={`delete-button-${appointment.id}`}
                   >
                     <Trash2 className="w-4 h-4" />

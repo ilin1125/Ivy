@@ -36,7 +36,7 @@ export default function Login({ onLogin }) {
             <Car className="w-8 h-8 text-white" />
           </div>
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            駕駛預約系統
+            輝哥預約系統
           </CardTitle>
           <CardDescription className="text-base text-gray-600">
             輸入密碼以登入系統

@@ -14,6 +14,14 @@ const statusConfig = {
   cancelled: { label: '已取消', color: 'bg-red-100 text-red-700 border-red-200' },
 };
 
+const typeConfig = {
+  airport: { label: '機場接送', color: 'bg-purple-100 text-purple-700 border-purple-300' },
+  city: { label: '市區接送', color: 'bg-cyan-100 text-cyan-700 border-cyan-300' },
+  corporate: { label: '商務用車', color: 'bg-slate-100 text-slate-700 border-slate-300' },
+  personal: { label: '私人行程', color: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
+  vip: { label: 'VIP 專屬', color: 'bg-amber-100 text-amber-700 border-amber-300' },
+};
+
 export default function AppointmentCalendar({ appointments, onEdit }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -88,51 +96,58 @@ export default function AppointmentCalendar({ appointments, onEdit }) {
             <div className="space-y-3" data-testid="calendar-appointments">
               {selectedDateAppointments
                 .sort((a, b) => new Date(a.pickup_time) - new Date(b.pickup_time))
-                .map((appointment) => (
-                  <Card
-                    key={appointment.id}
-                    className="bg-gradient-to-r from-white to-blue-50 border border-blue-100 hover:shadow-md transition-shadow"
-                    data-testid={`calendar-appointment-${appointment.id}`}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-bold text-gray-900">{appointment.client_name}</h4>
-                            <Badge className={`status-badge text-xs ${statusConfig[appointment.status]?.color}`}>
-                              {statusConfig[appointment.status]?.label}
-                            </Badge>
+                .map((appointment) => {
+                  const typeStyle = typeConfig[appointment.appointment_type] || typeConfig.city;
+                  
+                  return (
+                    <Card
+                      key={appointment.id}
+                      className={`border-l-4 ${typeStyle.color.includes('purple') ? 'border-l-purple-500' : typeStyle.color.includes('cyan') ? 'border-l-cyan-500' : typeStyle.color.includes('slate') ? 'border-l-slate-600' : typeStyle.color.includes('emerald') ? 'border-l-emerald-500' : 'border-l-amber-500'} hover:shadow-md transition-shadow`}
+                      data-testid={`calendar-appointment-${appointment.id}`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                              <h4 className="font-bold text-gray-900">{appointment.client_name}</h4>
+                              <Badge className={`text-xs ${typeStyle.color}`}>
+                                {typeStyle.label}
+                              </Badge>
+                              <Badge className={`status-badge text-xs ${statusConfig[appointment.status]?.color}`}>
+                                {statusConfig[appointment.status]?.label}
+                              </Badge>
+                            </div>
+                            
+                            <div className="space-y-1 text-sm">
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <Clock className="w-4 h-4" />
+                                <span>{formatTime(appointment.pickup_time)} - {formatTime(appointment.arrival_time)}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <MapPin className="w-4 h-4 text-green-600" />
+                                <span>{appointment.pickup_location}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <MapPin className="w-4 h-4 text-red-600" />
+                                <span>{appointment.arrival_location}</span>
+                              </div>
+                            </div>
                           </div>
                           
-                          <div className="space-y-1 text-sm">
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <Clock className="w-4 h-4" />
-                              <span>{formatTime(appointment.pickup_time)} - {formatTime(appointment.arrival_time)}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <MapPin className="w-4 h-4 text-green-600" />
-                              <span>{appointment.pickup_location}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-gray-600">
-                              <MapPin className="w-4 h-4 text-red-600" />
-                              <span>{appointment.arrival_location}</span>
-                            </div>
-                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => onEdit(appointment)}
+                            className="ml-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                            data-testid={`calendar-edit-${appointment.id}`}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
                         </div>
-                        
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onEdit(appointment)}
-                          className="ml-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
-                          data-testid={`calendar-edit-${appointment.id}`}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
             </div>
           )}
         </CardContent>

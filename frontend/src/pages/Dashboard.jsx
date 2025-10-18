@@ -21,6 +21,7 @@ export default function Dashboard({ onLogout }) {
   const [editingAppointment, setEditingAppointment] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('list');
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function Dashboard({ onLogout }) {
 
   useEffect(() => {
     filterAppointments();
-  }, [appointments, searchTerm, statusFilter]);
+  }, [appointments, searchTerm, statusFilter, typeFilter]);
 
   const getAuthHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -59,6 +60,11 @@ export default function Dashboard({ onLogout }) {
       filtered = filtered.filter(apt => apt.status === statusFilter);
     }
 
+    // Type filter
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(apt => apt.appointment_type === typeFilter);
+    }
+
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(apt =>
@@ -82,6 +88,10 @@ export default function Dashboard({ onLogout }) {
   };
 
   const handleDeleteAppointment = async (id) => {
+    if (!window.confirm('確定要刪除這個預約嗎？')) {
+      return;
+    }
+    
     try {
       await axios.delete(`${API}/appointments/${id}`, getAuthHeader());
       toast.success('預約已刪除');
@@ -107,6 +117,16 @@ export default function Dashboard({ onLogout }) {
     }
   };
 
+  const handleQuickStatusChange = async (appointmentId, newStatus) => {
+    try {
+      await axios.put(`${API}/appointments/${appointmentId}`, { status: newStatus }, getAuthHeader());
+      toast.success('狀態已更新');
+      fetchAppointments();
+    } catch (error) {
+      toast.error('更新狀態失敗');
+    }
+  };
+
   const getUpcomingCount = () => {
     const now = new Date();
     return appointments.filter(apt => {
@@ -123,7 +143,7 @@ export default function Dashboard({ onLogout }) {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900" data-testid="dashboard-title">
-                駕駛預約管理
+                輝哥預約管理
               </h1>
               <p className="text-sm text-gray-600 mt-1">
                 即將到來的預約：<span className="font-semibold text-blue-600">{getUpcomingCount()}</span> 個
@@ -156,7 +176,21 @@ export default function Dashboard({ onLogout }) {
                 data-testid="search-input"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="w-40 h-11 bg-white" data-testid="type-filter">
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全部類型</SelectItem>
+                  <SelectItem value="airport">機場接送</SelectItem>
+                  <SelectItem value="city">市區接送</SelectItem>
+                  <SelectItem value="corporate">商務用車</SelectItem>
+                  <SelectItem value="personal">私人行程</SelectItem>
+                  <SelectItem value="vip">VIP 專屬</SelectItem>
+                </SelectContent>
+              </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-40 h-11 bg-white" data-testid="status-filter">
                   <Filter className="w-4 h-4 mr-2" />
@@ -203,6 +237,7 @@ export default function Dashboard({ onLogout }) {
                 appointments={filteredAppointments}
                 onEdit={handleEditAppointment}
                 onDelete={handleDeleteAppointment}
+                onQuickStatusChange={handleQuickStatusChange}
               />
             )}
           </TabsContent>
