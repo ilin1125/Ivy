@@ -139,7 +139,7 @@ backend:
 frontend:
   - task: "AppointmentModal表單佈局優化"
     implemented: true
-    working: true
+    working: false
     file: "AppointmentModal.jsx"
     stuck_count: 0
     priority: "high"
@@ -160,6 +160,46 @@ frontend:
           - 抵達時間和抵達地點確實在同一行顯示
           - 航班資訊和金額欄位在同一行（行李/人數欄位已按需求移除）
           - 表單響應式佈局正常，在桌面版顯示為兩欄佈局
+      - working: false
+        agent: "testing"
+        comment: |
+          ❌ 日期選擇功能測試發現關鍵問題
+          
+          📋 測試結果詳細報告：
+          
+          🎯 登入功能：
+          - ✅ 成功使用密碼登入 (driver123)
+          - ✅ 系統正常進入儀表板
+          
+          📝 AppointmentModal 開啟：
+          - ✅ 「新增預約」按鈕可見且可點擊
+          - ✅ Modal 成功開啟並顯示完整表單
+          
+          📅 日期時間選擇器驗證：
+          - ✅ 接客時間欄位：使用 datetime-local input 元件
+          - ✅ 抵達時間欄位：使用 datetime-local input 元件
+          - ✅ 兩個日期欄位都可以正常點擊
+          - ✅ 日期格式顯示正確 (01/20/2025, 02:30 PM)
+          
+          📋 表單填寫測試：
+          - ✅ 客戶名稱：成功填寫「測試客戶」
+          - ✅ 預約類型：預設選擇「機場」類型
+          - ✅ 接客時間：成功設定 2025-01-20T14:30
+          - ✅ 接客地點：成功填寫「台北車站」
+          - ✅ 抵達時間：成功設定 2025-01-20T15:30
+          - ✅ 抵達地點：成功填寫「桃園機場」
+          
+          ❌ 關鍵問題：
+          - 點擊「新增預約」按鈕後出現 422 錯誤
+          - 後端 API 回應錯誤：/api/appointments 返回 422 狀態碼
+          - 顯示「新增預約失敗」錯誤訊息
+          - Modal 保持開啟狀態，表示驗證失敗
+          
+          🔍 技術分析：
+          - 前端表單驗證通過，所有必填欄位都已填寫
+          - 日期時間格式正確 (datetime-local)
+          - 問題出現在後端 API 處理階段
+          - 可能是日期格式轉換或後端驗證邏輯問題
 
   - task: "行李/人數欄位重新整合"
     implemented: false
