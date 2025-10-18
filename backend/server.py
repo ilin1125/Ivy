@@ -342,6 +342,40 @@ async def get_income_stats(
         "by_type": type_stats
     }
 
+# SMS Template endpoints
+@api_router.get("/sms-template", response_model=SMSTemplate)
+async def get_sms_template(user=Depends(verify_token)):
+    """Get SMS template settings"""
+    template = await db.sms_templates.find_one({}, {"_id": 0})
+    if not template:
+        # Return default template if none exists
+        default_template = SMSTemplate()
+        await db.sms_templates.insert_one(default_template.model_dump())
+        return default_template
+    return SMSTemplate(**template)
+
+@api_router.put("/sms-template", response_model=SMSTemplate)
+async def update_sms_template(
+    template_update: SMSTemplateUpdate,
+    user=Depends(verify_token)
+):
+    """Update SMS template settings"""
+    existing = await db.sms_templates.find_one({}, {"_id": 0})
+    
+    if not existing:
+        # Create default if doesn't exist
+        default_template = SMSTemplate()
+        await db.sms_templates.insert_one(default_template.model_dump())
+        existing = default_template.model_dump()
+    
+    update_data = template_update.model_dump(exclude_unset=True)
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.sms_templates.update_one({}, {"$set": update_data})
+    
+    updated = await db.sms_templates.find_one({}, {"_id": 0})
+    return SMSTemplate(**updated)
+
 # Include the router in the main app
 app.include_router(api_router)
 
