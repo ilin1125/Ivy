@@ -101,7 +101,6 @@ class AppointmentUpdate(BaseModel):
     arrival_time: Optional[str] = None
     arrival_location: Optional[str] = None
     flight_info: Optional[str] = None
-    luggage_passengers: Optional[str] = None
     other_details: Optional[str] = None
     appointment_type_id: Optional[str] = None
     status: Optional[str] = None
