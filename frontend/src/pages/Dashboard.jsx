@@ -242,7 +242,6 @@ export default function Dashboard({ onLogout }) {
                 <SelectContent>
                   <SelectItem value="all">全部狀態</SelectItem>
                   <SelectItem value="scheduled">已排程</SelectItem>
-                  <SelectItem value="in_progress">進行中</SelectItem>
                   <SelectItem value="completed">已完成</SelectItem>
                   <SelectItem value="cancelled">已取消</SelectItem>
                 </SelectContent>
