@@ -26,6 +26,9 @@ const COLORS = [
 ];
 
 export default function AppointmentList({ appointments, appointmentTypes, onEdit, onCopy, onDelete, onQuickStatusChange }) {
+  const [showSMSModal, setShowSMSModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+
   const formatDateTime = (dateStr) => {
     try {
       return format(new Date(dateStr), 'MM/dd HH:mm', { locale: zhTW });
