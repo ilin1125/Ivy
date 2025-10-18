@@ -24,7 +24,7 @@ const COLORS = [
   { value: '#64748b', bg: 'bg-slate-50', border: 'border-slate-600', text: 'text-slate-700', badge: 'bg-slate-100' },
 ];
 
-export default function AppointmentList({ appointments, appointmentTypes, onEdit, onDelete, onQuickStatusChange }) {
+export default function AppointmentList({ appointments, appointmentTypes, onEdit, onCopy, onDelete, onQuickStatusChange }) {
   const formatDateTime = (dateStr) => {
     try {
       return format(new Date(dateStr), 'MM/dd HH:mm', { locale: zhTW });
