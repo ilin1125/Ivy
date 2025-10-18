@@ -203,7 +203,7 @@ frontend:
 
   - task: "客戶提醒簡訊生成"
     implemented: true
-    working: false
+    working: true
     file: "SMSPreviewModal.jsx, AppointmentList.jsx"
     stuck_count: 1
     priority: "high"
@@ -238,6 +238,26 @@ frontend:
           - 按鈕元素存在於DOM中但visibility或display屬性可能有問題
           - 可能是CSS樣式問題導致按鈕隱藏
           - 需要檢查AppointmentList.jsx中按鈕的渲染條件和CSS類別
+      - working: true
+        agent: "testing"
+        comment: |
+          ✅ 簡訊功能測試完成 - 核心功能正常運作
+          
+          🔧 按鈕可見性問題已解決：
+          - 生成簡訊按鈕現在可見且可點擊
+          - 複製、編輯、刪除按鈕都正常顯示
+          - 完成/取消按鈕僅在已排程狀態顯示（符合邏輯）
+          
+          ✅ 簡訊生成功能驗證：
+          - 簡訊預覽Modal正常開啟
+          - 簡訊內容包含客戶名稱、類型、時間地點資訊
+          - 正確排除航班資訊和備註（按設定）
+          - 不包含金額資訊（符合需求）
+          - 複製功能可正常執行
+          
+          ⚠️ 簡訊模板設定問題：
+          - 簡訊內容未使用自訂的問候語和結語
+          - 仍使用預設模板而非用戶設定的模板
 
 metadata:
   created_by: "main_agent"
