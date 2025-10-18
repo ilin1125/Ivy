@@ -70,7 +70,7 @@ class Appointment(BaseModel):
     arrival_time: str  # ISO datetime string
     arrival_location: str
     flight_info: Optional[str] = ""
-    luggage_count: Optional[int] = 0
+    luggage_passengers: Optional[str] = ""  # Changed from luggage_count to luggage_passengers
     other_details: Optional[str] = ""
     appointment_type_id: str
     status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
@@ -84,7 +84,7 @@ class AppointmentCreate(BaseModel):
     arrival_time: str
     arrival_location: str
     flight_info: Optional[str] = ""
-    luggage_count: Optional[int] = 0
+    luggage_passengers: Optional[str] = ""
     other_details: Optional[str] = ""
     appointment_type_id: str
     status: Optional[str] = "scheduled"
@@ -96,7 +96,7 @@ class AppointmentUpdate(BaseModel):
     arrival_time: Optional[str] = None
     arrival_location: Optional[str] = None
     flight_info: Optional[str] = None
-    luggage_count: Optional[int] = None
+    luggage_passengers: Optional[str] = None
     other_details: Optional[str] = None
     appointment_type_id: Optional[str] = None
     status: Optional[str] = None
