@@ -225,7 +225,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="flight_info">航班資訊</Label>
               <Input
@@ -234,17 +234,6 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
                 onChange={(e) => handleChange('flight_info', e.target.value)}
                 placeholder="例如：CI123"
                 data-testid="modal-flight-info"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="luggage_passengers">行李/人數</Label>
-              <Input
-                id="luggage_passengers"
-                value={formData.luggage_passengers}
-                onChange={(e) => handleChange('luggage_passengers', e.target.value)}
-                placeholder="例如：2件/3人"
-                data-testid="modal-luggage-passengers"
               />
             </div>
 
