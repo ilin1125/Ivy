@@ -61,8 +61,8 @@ export default function IncomeReportModal({ onClose }) {
     setLoading(true);
     try {
       const params = {
-        start_date: format(startDate, 'yyyy-MM-dd'),
-        end_date: format(endDate, 'yyyy-MM-dd')
+        start_date: startDate,
+        end_date: endDate
       };
       if (selectedType !== 'all') {
         params.appointment_type_id = selectedType;
@@ -86,14 +86,11 @@ export default function IncomeReportModal({ onClose }) {
       const response = await axios.get(`${API}/appointments`, getAuthHeader());
       const appointments = response.data;
       
-      const startDateStr = format(startDate, 'yyyy-MM-dd');
-      const endDateStr = format(endDate, 'yyyy-MM-dd');
-      
       // Filter appointments for the selected client and date range
       const filtered = appointments.filter(apt => {
         const pickupDate = apt.pickup_time.split('T')[0];
         const matchClient = apt.client_name === clientName;
-        const matchDate = pickupDate >= startDateStr && pickupDate <= endDateStr;
+        const matchDate = pickupDate >= startDate && pickupDate <= endDate;
         const matchStatus = apt.status === 'completed';
         return matchClient && matchDate && matchStatus;
       });
