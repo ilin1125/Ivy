@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, MapPin, Clock, Plane, Users, Calendar, Play, CheckCircle, XCircle } from 'lucide-react';
+import { Edit, Trash2, MapPin, Clock, Plane, Calendar, Play, CheckCircle, XCircle } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
