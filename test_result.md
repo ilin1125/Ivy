@@ -101,3 +101,169 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  輝哥的駕駛預約追蹤應用，支援Traditional Chinese，包含預約管理、自定義類型、
+  圖案/密碼登入、收入追蹤等功能。最新需求：
+  1. 表單佈局優化：接客時間和地點同一行，抵達時間和地點同一行
+  2. 行李/人數欄位重新加入（在航班資訊行）
+  3. 收入報表按類型篩選，移除平均收入
+  4. 單一客戶時段報表（方便請款/扣儲值）
+  5. 每個行程生成客戶提醒簡訊（可複製貼上修改）
+
+backend:
+  - task: "行李/人數欄位支援"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "後端模型已包含luggage_passengers欄位，支援儲存和讀取"
+
+  - task: "收入統計API支援類型篩選"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "/api/appointments/stats/income已支援appointment_type_id參數進行類型篩選"
+
+frontend:
+  - task: "AppointmentModal表單佈局優化"
+    implemented: true
+    working: "NA"
+    file: "AppointmentModal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: |
+          已完成表單佈局優化：
+          - 接客時間和接客地點在同一行
+          - 抵達時間和抵達地點在同一行
+          - 航班資訊、行李/人數、金額三個欄位在同一行
+
+  - task: "行李/人數欄位重新整合"
+    implemented: true
+    working: "NA"
+    file: "AppointmentModal.jsx, AppointmentList.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: |
+          已完成行李/人數欄位整合：
+          - AppointmentModal中新增luggage_passengers輸入欄位
+          - AppointmentList中顯示行李/人數資訊
+
+  - task: "收入報表類型篩選"
+    implemented: true
+    working: "NA"
+    file: "IncomeReportModal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: |
+          已完成收入報表功能強化：
+          - 新增類型篩選下拉選單
+          - 移除平均收入卡片（從3個卡片變成2個）
+          - 保留總收入和完成行程兩個卡片
+
+  - task: "單一客戶詳細報表"
+    implemented: true
+    working: "NA"
+    file: "IncomeReportModal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: |
+          已完成單一客戶詳細報表功能：
+          - 在客戶列表中新增「查看明細」按鈕
+          - 點擊後顯示該客戶在指定時段的所有完成行程
+          - 包含每個行程的詳細資訊（地點、時間、金額等）
+          - 顯示該客戶的總行程數和總金額
+
+  - task: "客戶提醒簡訊生成"
+    implemented: true
+    working: "NA"
+    file: "SMSPreviewModal.jsx, AppointmentList.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: |
+          已完成客戶提醒簡訊功能：
+          - 創建SMSPreviewModal組件
+          - 在AppointmentList中每個行程新增「生成簡訊」按鈕
+          - 簡訊包含：客戶名稱、類型、接客/抵達時間地點、航班資訊、行李/人數、備註
+          - 不包含金額資訊
+          - 提供一鍵複製功能
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "AppointmentModal表單佈局優化"
+    - "行李/人數欄位重新整合"
+    - "收入報表類型篩選"
+    - "單一客戶詳細報表"
+    - "客戶提醒簡訊生成"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      已完成所有用戶需求的實作：
+      
+      1. ✅ 表單佈局優化：
+         - 接客時間和地點在同一行
+         - 抵達時間和地點在同一行
+         - 航班資訊、行李/人數、金額在同一行
+      
+      2. ✅ 行李/人數欄位：
+         - 後端已支援
+         - 前端表單已新增
+         - 列表顯示已整合
+      
+      3. ✅ 收入報表強化：
+         - 新增類型篩選功能
+         - 移除平均收入卡片
+         - 保留總收入和完成行程
+      
+      4. ✅ 單一客戶報表：
+         - 可查看特定客戶在時段內的所有行程
+         - 顯示詳細資訊和總計
+         - 方便請款和扣儲值
+      
+      5. ✅ 客戶提醒簡訊：
+         - 為每個行程生成格式化簡訊
+         - 包含所有行程資訊（除金額外）
+         - 一鍵複製功能
+      
+      請進行前端測試以確認所有功能正常運作。
