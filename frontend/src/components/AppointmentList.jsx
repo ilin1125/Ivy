@@ -206,13 +206,20 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                 </div>
               </div>
 
-              {(appointment.flight_info || appointment.other_details) && (
+              {(appointment.flight_info || appointment.amount > 0 || appointment.other_details) && (
                 <div className="border-t pt-4 mt-4 space-y-2">
                   {appointment.flight_info && (
                     <div className="flex items-center gap-2">
                       <Plane className="w-4 h-4 text-gray-500" />
                       <span className="text-sm text-gray-600">航班資訊：</span>
                       <span className="text-sm font-medium text-gray-900">{appointment.flight_info}</span>
+                    </div>
+                  )}
+                  {appointment.amount > 0 && (
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-green-600" />
+                      <span className="text-sm text-gray-600">金額：</span>
+                      <span className="text-sm font-semibold text-green-700">NT$ {appointment.amount}</span>
                     </div>
                   )}
                   {appointment.other_details && (
