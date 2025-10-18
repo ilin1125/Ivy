@@ -58,6 +58,7 @@ export default function Dashboard({ onLogout }) {
     try {
       const response = await axios.get(`${API}/appointments`, getAuthHeader());
       setAppointments(response.data);
+      fetchIncomeStats();
     } catch (error) {
       if (error.response?.status === 401) {
         toast.error('登入已過期，請重新登入');
@@ -67,6 +68,15 @@ export default function Dashboard({ onLogout }) {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchIncomeStats = async () => {
+    try {
+      const response = await axios.get(`${API}/appointments/stats/income`, getAuthHeader());
+      setTotalIncome(response.data.total_income);
+    } catch (error) {
+      console.error('Failed to fetch income stats');
     }
   };
 
