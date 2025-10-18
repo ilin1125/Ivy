@@ -260,6 +260,14 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
           </Card>
         );
       })}
+      
+      {showSMSModal && selectedAppointment && (
+        <SMSPreviewModal
+          appointment={selectedAppointment}
+          appointmentTypes={appointmentTypes}
+          onClose={() => setShowSMSModal(false)}
+        />
+      )}
     </div>
   );
 }
