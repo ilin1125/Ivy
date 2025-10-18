@@ -93,7 +93,7 @@ export default function Dashboard({ onLogout }) {
   const handleAddAppointment = () => {
     if (appointmentTypes.length === 0) {
       toast.error('請先設定預約類型');
-      setShowTypeModal(true);
+      setShowSettingsModal(true);
       return;
     }
     setEditingAppointment(null);
