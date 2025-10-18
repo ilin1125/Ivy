@@ -31,6 +31,7 @@ export default function Dashboard({ onLogout }) {
   useEffect(() => {
     fetchAppointmentTypes();
     fetchAppointments();
+    fetchIncomeStats();
   }, []);
 
   useEffect(() => {
