@@ -271,6 +271,7 @@ async def delete_appointment(appointment_id: str, user=Depends(verify_token)):
 async def get_income_stats(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
+    client_name: Optional[str] = None,
     user=Depends(verify_token)
 ):
     """Get income statistics for completed appointments"""
@@ -284,7 +285,20 @@ async def get_income_stats(
         else:
             query['pickup_time'] = {"$lte": end_date}
     
+    if client_name:
+        query['client_name'] = {"$regex": client_name, "$options": "i"}
+    
     appointments = await db.appointments.find(query, {"_id": 0}).to_list(10000)
+    
+    # Group by client
+    client_stats = {}
+    for apt in appointments:
+        name = apt.get('client_name', 'Unknown')
+        amount = apt.get('amount', 0)
+        if name not in client_stats:
+            client_stats[name] = {'count': 0, 'total': 0}
+        client_stats[name]['count'] += 1
+        client_stats[name]['total'] += amount
     
     total_income = sum(apt.get('amount', 0) for apt in appointments)
     total_count = len(appointments)
@@ -292,7 +306,8 @@ async def get_income_stats(
     return {
         "total_income": total_income,
         "total_count": total_count,
-        "average_income": total_income / total_count if total_count > 0 else 0
+        "average_income": total_income / total_count if total_count > 0 else 0,
+        "by_client": client_stats
     }
 
 # Include the router in the main app
