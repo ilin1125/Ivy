@@ -267,6 +267,34 @@ async def delete_appointment(appointment_id: str, user=Depends(verify_token)):
         raise HTTPException(status_code=404, detail="Appointment not found")
     return {"message": "Appointment deleted successfully"}
 
+@api_router.get("/appointments/stats/income")
+async def get_income_stats(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    user=Depends(verify_token)
+):
+    """Get income statistics for completed appointments"""
+    query = {"status": "completed"}
+    
+    if start_date:
+        query['pickup_time'] = {"$gte": start_date}
+    if end_date:
+        if 'pickup_time' in query:
+            query['pickup_time']['$lte'] = end_date
+        else:
+            query['pickup_time'] = {"$lte": end_date}
+    
+    appointments = await db.appointments.find(query, {"_id": 0}).to_list(10000)
+    
+    total_income = sum(apt.get('amount', 0) for apt in appointments)
+    total_count = len(appointments)
+    
+    return {
+        "total_income": total_income,
+        "total_count": total_count,
+        "average_income": total_income / total_count if total_count > 0 else 0
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
