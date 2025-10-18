@@ -172,22 +172,13 @@ export default function Dashboard({ onLogout }) {
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={() => setShowPatternModal(true)}
-                variant="outline"
-                className="flex items-center gap-2 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200"
-                data-testid="pattern-settings-button"
-              >
-                <Grid3x3 className="w-4 h-4" />
-                圖案設定
-              </Button>
-              <Button
-                onClick={() => setShowTypeModal(true)}
+                onClick={() => setShowSettingsModal(true)}
                 variant="outline"
                 className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
-                data-testid="type-settings-button"
+                data-testid="settings-button"
               >
                 <Settings className="w-4 h-4" />
-                類型設定
+                設定
               </Button>
               <Button
                 onClick={onLogout}
