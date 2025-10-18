@@ -145,6 +145,18 @@ export default function Login({ onLogin }) {
               {hasPattern ? (
                 <div className="w-full flex flex-col items-center">
                   <PatternLock onComplete={handlePatternComplete} size={4} />
+                  <div className="flex items-center space-x-2 mt-4">
+                    <input
+                      type="checkbox"
+                      id="remember-me-pattern"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor="remember-me-pattern" className="text-sm text-gray-700 cursor-pointer">
+                      記住我（下次自動登入）
+                    </label>
+                  </div>
                   {loading && (
                     <p className="text-sm text-gray-600 mt-4">驗證中...</p>
                   )}
