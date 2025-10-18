@@ -150,6 +150,16 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                   <Button
                     size="sm"
                     variant="outline"
+                    onClick={() => handleShowSMS(appointment)}
+                    className="hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200"
+                    title="生成簡訊"
+                    data-testid={`sms-button-${appointment.id}`}
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => onCopy(appointment)}
                     className="hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200"
                     title="複製行程"
