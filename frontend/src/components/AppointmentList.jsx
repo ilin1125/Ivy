@@ -54,6 +54,11 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
     return color || COLORS[0];
   };
 
+  const handleShowSMS = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowSMSModal(true);
+  };
+
   if (appointments.length === 0) {
     return (
       <Card className="bg-white shadow-lg border-0">
