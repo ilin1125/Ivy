@@ -118,8 +118,7 @@ export default function AppointmentCalendar({ appointments, appointmentTypes, on
                   return (
                     <div
                       key={appointment.id}
-                      onClick={() => onEdit(appointment)}
-                      className={`p-3 rounded-lg border-l-4 ${typeStyle.border} ${typeStyle.bg} hover:shadow-md transition-all cursor-pointer`}
+                      className={`p-3 rounded-lg border-l-4 ${typeStyle.border} ${typeStyle.bg} hover:shadow-md transition-all group relative`}
                       data-testid={`calendar-appointment-${appointment.id}`}
                     >
                       <div className="flex items-start gap-3">
@@ -144,6 +143,30 @@ export default function AppointmentCalendar({ appointments, appointmentTypes, on
                             <MapPin className="w-3 h-3 text-red-600" />
                             <span className="truncate">{appointment.arrival_location}</span>
                           </div>
+                        </div>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onCopy(appointment);
+                            }}
+                            className="p-1.5 rounded hover:bg-purple-100 text-purple-600"
+                            title="複製行程"
+                            data-testid={`calendar-copy-${appointment.id}`}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(appointment);
+                            }}
+                            className="p-1.5 rounded hover:bg-blue-100 text-blue-600"
+                            title="編輯"
+                            data-testid={`calendar-edit-${appointment.id}`}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
                     </div>
