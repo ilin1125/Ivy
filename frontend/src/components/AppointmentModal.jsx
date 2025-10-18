@@ -27,6 +27,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
     arrival_time: '',
     arrival_location: '',
     flight_info: '',
+    luggage_passengers: '',
     other_details: '',
     amount: '',
     appointment_type_id: '',
