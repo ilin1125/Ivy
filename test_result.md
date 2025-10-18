@@ -457,6 +457,37 @@ agent_communication:
       請進行前端測試以確認所有功能正常運作。
   - agent: "testing"
     message: |
+      ❌ 新增預約功能日期選擇測試發現關鍵問題
+      
+      📋 測試執行摘要：
+      - 測試環境：https://driver-appointments.preview.emergentagent.com
+      - 登入方式：密碼登入 (driver123) ✅
+      - 測試重點：AppointmentModal 日期選擇器功能
+      
+      🎯 前端功能驗證結果：
+      1. ✅ 登入系統：密碼登入正常運作
+      2. ✅ Modal 開啟：「新增預約」按鈕可點擊，Modal 正常開啟
+      3. ✅ 日期選擇器：接客時間和抵達時間都使用 datetime-local input 元件
+      4. ✅ 表單佈局：接客時間/地點同行，抵達時間/地點同行，符合需求
+      5. ✅ 表單填寫：所有欄位都可以正常填寫和選擇
+      6. ✅ 日期格式：顯示格式正確 (MM/DD/YYYY, HH:MM AM/PM)
+      
+      ❌ 關鍵問題：
+      - 後端 API 錯誤：點擊「新增預約」後出現 422 錯誤
+      - API 端點：/api/appointments 返回 422 狀態碼
+      - 錯誤訊息：「新增預約失敗」
+      - Modal 保持開啟，表示後端驗證失敗
+      
+      🔧 建議修復方向：
+      1. 檢查後端 API /api/appointments POST 端點的驗證邏輯
+      2. 確認日期時間格式轉換是否正確 (ISO 格式)
+      3. 檢查後端模型驗證規則
+      4. 查看後端日誌以獲取詳細錯誤信息
+      
+      📊 測試結論：
+      前端日期選擇器功能完全正常，問題出現在後端 API 處理階段。
+  - agent: "testing"
+    message: |
       簡訊功能測試完成，發現關鍵問題：
       
       🔍 測試結果摘要：
