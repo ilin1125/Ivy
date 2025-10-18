@@ -34,13 +34,25 @@ export default function IncomeReportModal({ onClose }) {
     
     setStartDate(firstDay.toISOString().split('T')[0]);
     setEndDate(lastDay.toISOString().split('T')[0]);
+    
+    // Fetch appointment types
+    fetchAppointmentTypes();
   }, []);
 
   useEffect(() => {
     if (startDate && endDate) {
       fetchStats();
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate, selectedType]);
+
+  const fetchAppointmentTypes = async () => {
+    try {
+      const response = await axios.get(`${API}/appointment-types`, getAuthHeader());
+      setAppointmentTypes(response.data);
+    } catch (error) {
+      console.error('Failed to fetch appointment types');
+    }
+  };
 
   const fetchStats = async () => {
     setLoading(true);
