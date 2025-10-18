@@ -280,6 +280,7 @@ export default function Dashboard({ onLogout }) {
                 appointments={filteredAppointments}
                 appointmentTypes={appointmentTypes}
                 onEdit={handleEditAppointment}
+                onCopy={handleCopyAppointment}
                 onDelete={handleDeleteAppointment}
                 onQuickStatusChange={handleQuickStatusChange}
               />
