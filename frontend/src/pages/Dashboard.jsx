@@ -169,6 +169,7 @@ export default function Dashboard({ onLogout }) {
               </h1>
               <p className="text-sm text-gray-600 mt-1">
                 即將到來的預約：<span className="font-semibold text-blue-600">{getUpcomingCount()}</span> 個
+                {isRemembered && <span className="ml-3 text-green-600">● 已啟用自動登入</span>}
               </p>
             </div>
             <div className="flex gap-2">
