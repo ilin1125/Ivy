@@ -236,6 +236,20 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
                 data-testid="modal-flight-info"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="amount">金額（元）</Label>
+              <Input
+                id="amount"
+                type="number"
+                min="0"
+                step="1"
+                value={formData.amount}
+                onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
+                placeholder="0"
+                data-testid="modal-amount"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
