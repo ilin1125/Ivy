@@ -133,10 +133,10 @@ export default function IncomeReportModal({ onClose }) {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Date Range Selector */}
+          {/* Date Range and Type Filter */}
           <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-0">
             <CardContent className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="start-date" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
@@ -163,16 +163,101 @@ export default function IncomeReportModal({ onClose }) {
                     data-testid="end-date"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="type-filter" className="flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    篩選類型
+                  </Label>
+                  <Select value={selectedType} onValueChange={setSelectedType}>
+                    <SelectTrigger data-testid="type-filter">
+                      <SelectValue placeholder="選擇類型" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">全部類型</SelectItem>
+                      {appointmentTypes.map(type => (
+                        <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           {loading ? (
             <div className="text-center py-12 text-gray-500">載入中...</div>
+          ) : showClientDetail ? (
+            <>
+              {/* Client Detail View */}
+              <div className="space-y-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowClientDetail(false)}
+                  className="flex items-center gap-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  返回統計
+                </Button>
+
+                <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-xl flex items-center gap-2">
+                      <Users className="w-5 h-5" />
+                      {selectedClient} 的行程明細
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-4 p-4 bg-white rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">總行程數：</span>
+                        <span className="text-xl font-bold text-blue-700">{clientAppointments.length} 趟</span>
+                      </div>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-gray-600">總金額：</span>
+                        <span className="text-2xl font-bold text-green-700">NT$ {clientDetailTotal.toLocaleString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {clientAppointments.map((apt, idx) => (
+                        <div key={apt.id} className="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex-1">
+                              <div className="font-semibold text-gray-900">行程 #{idx + 1}</div>
+                              <div className="text-sm text-gray-600">{getTypeName(apt.appointment_type_id)}</div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-green-700">NT$ {(apt.amount || 0).toLocaleString()}</div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3 text-green-600" />
+                              <span className="text-gray-600">接客：</span>
+                              <span className="font-medium">{apt.pickup_location}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3 text-red-600" />
+                              <span className="text-gray-600">目的地：</span>
+                              <span className="font-medium">{apt.arrival_location}</span>
+                            </div>
+                            <div className="flex items-center gap-1 col-span-2">
+                              <Clock className="w-3 h-3 text-blue-600" />
+                              <span className="text-gray-600">時間：</span>
+                              <span className="font-medium">{formatDateTime(apt.pickup_time)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
           ) : stats ? (
             <>
-              {/* Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Summary Cards - Removed Average Income */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-0 shadow-lg">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm text-gray-600 flex items-center gap-2">
@@ -200,20 +285,6 @@ export default function IncomeReportModal({ onClose }) {
                     </p>
                   </CardContent>
                 </Card>
-
-                <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-0 shadow-lg">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm text-gray-600 flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4" />
-                      平均收入
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-3xl font-bold text-purple-700">
-                      NT$ {Math.round(stats.average_income).toLocaleString()}
-                    </p>
-                  </CardContent>
-                </Card>
               </div>
 
               {/* By Client Stats */}
@@ -229,20 +300,31 @@ export default function IncomeReportModal({ onClose }) {
                     <p className="text-center text-gray-500 py-8">此期間無完成行程</p>
                   ) : (
                     <div className="space-y-2">
-                      <div className="grid grid-cols-3 gap-4 px-4 py-2 bg-gray-100 rounded-lg font-semibold text-sm text-gray-700">
+                      <div className="grid grid-cols-4 gap-4 px-4 py-2 bg-gray-100 rounded-lg font-semibold text-sm text-gray-700">
                         <div>客戶名稱</div>
                         <div className="text-center">行程數</div>
                         <div className="text-right">總費用</div>
+                        <div className="text-center">操作</div>
                       </div>
                       {clientList.map(([clientName, data]) => (
                         <div
                           key={clientName}
-                          className="grid grid-cols-3 gap-4 px-4 py-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition-colors"
+                          className="grid grid-cols-4 gap-4 px-4 py-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition-colors"
                         >
                           <div className="font-medium text-gray-900">{clientName}</div>
                           <div className="text-center text-gray-600">{data.count} 趟</div>
                           <div className="text-right font-semibold text-green-700">
                             NT$ {data.total.toLocaleString()}
+                          </div>
+                          <div className="text-center">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => fetchClientAppointments(clientName)}
+                              className="hover:bg-blue-50 hover:text-blue-600"
+                            >
+                              查看明細
+                            </Button>
                           </div>
                         </div>
                       ))}
