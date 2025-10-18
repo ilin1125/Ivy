@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, List, Plus, LogOut, Search, Filter } from 'lucide-react';
+import { Calendar, List, Plus, LogOut, Search, Filter, Settings } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import AppointmentList from '@/components/AppointmentList';
 import AppointmentCalendar from '@/components/AppointmentCalendar';
 import AppointmentModal from '@/components/AppointmentModal';
+import TypeManagementModal from '@/components/TypeManagementModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -15,9 +16,11 @@ const API = `${BACKEND_URL}/api`;
 
 export default function Dashboard({ onLogout }) {
   const [appointments, setAppointments] = useState([]);
+  const [appointmentTypes, setAppointmentTypes] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showTypeModal, setShowTypeModal] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -25,6 +28,7 @@ export default function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('list');
 
   useEffect(() => {
+    fetchAppointmentTypes();
     fetchAppointments();
   }, []);
 
@@ -35,6 +39,18 @@ export default function Dashboard({ onLogout }) {
   const getAuthHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
   });
+
+  const fetchAppointmentTypes = async () => {
+    try {
+      const response = await axios.get(`${API}/appointment-types`, getAuthHeader());
+      setAppointmentTypes(response.data);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        toast.error('登入已過期，請重新登入');
+        onLogout();
+      }
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
@@ -55,17 +71,14 @@ export default function Dashboard({ onLogout }) {
   const filterAppointments = () => {
     let filtered = [...appointments];
 
-    // Status filter
     if (statusFilter !== 'all') {
       filtered = filtered.filter(apt => apt.status === statusFilter);
     }
 
-    // Type filter
     if (typeFilter !== 'all') {
-      filtered = filtered.filter(apt => apt.appointment_type === typeFilter);
+      filtered = filtered.filter(apt => apt.appointment_type_id === typeFilter);
     }
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(apt =>
         apt.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -78,6 +91,11 @@ export default function Dashboard({ onLogout }) {
   };
 
   const handleAddAppointment = () => {
+    if (appointmentTypes.length === 0) {
+      toast.error('請先設定預約類型');
+      setShowTypeModal(true);
+      return;
+    }
     setEditingAppointment(null);
     setShowModal(true);
   };
@@ -149,15 +167,26 @@ export default function Dashboard({ onLogout }) {
                 即將到來的預約：<span className="font-semibold text-blue-600">{getUpcomingCount()}</span> 個
               </p>
             </div>
-            <Button
-              onClick={onLogout}
-              variant="outline"
-              className="flex items-center gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-              data-testid="logout-button"
-            >
-              <LogOut className="w-4 h-4" />
-              登出
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setShowTypeModal(true)}
+                variant="outline"
+                className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                data-testid="type-settings-button"
+              >
+                <Settings className="w-4 h-4" />
+                類型設定
+              </Button>
+              <Button
+                onClick={onLogout}
+                variant="outline"
+                className="flex items-center gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                data-testid="logout-button"
+              >
+                <LogOut className="w-4 h-4" />
+                登出
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -184,11 +213,9 @@ export default function Dashboard({ onLogout }) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">全部類型</SelectItem>
-                  <SelectItem value="airport">機場接送</SelectItem>
-                  <SelectItem value="city">市區接送</SelectItem>
-                  <SelectItem value="corporate">商務用車</SelectItem>
-                  <SelectItem value="personal">私人行程</SelectItem>
-                  <SelectItem value="vip">VIP 專屬</SelectItem>
+                  {appointmentTypes.map(type => (
+                    <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -235,6 +262,7 @@ export default function Dashboard({ onLogout }) {
             ) : (
               <AppointmentList
                 appointments={filteredAppointments}
+                appointmentTypes={appointmentTypes}
                 onEdit={handleEditAppointment}
                 onDelete={handleDeleteAppointment}
                 onQuickStatusChange={handleQuickStatusChange}
@@ -248,6 +276,7 @@ export default function Dashboard({ onLogout }) {
             ) : (
               <AppointmentCalendar
                 appointments={filteredAppointments}
+                appointmentTypes={appointmentTypes}
                 onEdit={handleEditAppointment}
               />
             )}
@@ -255,12 +284,24 @@ export default function Dashboard({ onLogout }) {
         </Tabs>
       </main>
 
-      {/* Modal */}
+      {/* Modals */}
       {showModal && (
         <AppointmentModal
           appointment={editingAppointment}
+          appointmentTypes={appointmentTypes}
           onClose={() => setShowModal(false)}
           onSave={handleSaveAppointment}
+        />
+      )}
+
+      {showTypeModal && (
+        <TypeManagementModal
+          types={appointmentTypes}
+          onClose={() => setShowTypeModal(false)}
+          onSave={() => {
+            fetchAppointmentTypes();
+            fetchAppointments();
+          }}
         />
       )}
     </div>

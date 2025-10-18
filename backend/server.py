@@ -41,6 +41,25 @@ class LoginResponse(BaseModel):
     token: str
     message: str
 
+class AppointmentType(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    color: str  # hex color or tailwind class
+    icon: str  # icon name from lucide-react
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class AppointmentTypeCreate(BaseModel):
+    name: str
+    color: str
+    icon: str
+
+class AppointmentTypeUpdate(BaseModel):
+    name: Optional[str] = None
+    color: Optional[str] = None
+    icon: Optional[str] = None
+
 class Appointment(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
@@ -53,7 +72,7 @@ class Appointment(BaseModel):
     flight_info: Optional[str] = ""
     luggage_count: Optional[int] = 0
     other_details: Optional[str] = ""
-    appointment_type: str = "airport"  # airport, city, corporate, personal, vip
+    appointment_type_id: str
     status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -67,7 +86,7 @@ class AppointmentCreate(BaseModel):
     flight_info: Optional[str] = ""
     luggage_count: Optional[int] = 0
     other_details: Optional[str] = ""
-    appointment_type: Optional[str] = "airport"
+    appointment_type_id: str
     status: Optional[str] = "scheduled"
 
 class AppointmentUpdate(BaseModel):
@@ -79,7 +98,7 @@ class AppointmentUpdate(BaseModel):
     flight_info: Optional[str] = None
     luggage_count: Optional[int] = None
     other_details: Optional[str] = None
-    appointment_type: Optional[str] = None
+    appointment_type_id: Optional[str] = None
     status: Optional[str] = None
 
 # Authentication function
@@ -96,17 +115,54 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 # Authentication endpoint
 @api_router.post("/auth/login", response_model=LoginResponse)
 async def login(request: LoginRequest):
-    # Simple password check - in production, you'd want to hash this
-    # For now, using a simple password: "driver123"
     correct_password = "driver123"
     
     if request.password != correct_password:
         raise HTTPException(status_code=401, detail="Invalid password")
     
-    # Create JWT token
     token = jwt.encode({"user": "driver", "exp": datetime.now(timezone.utc).timestamp() + 86400 * 30}, SECRET_KEY, algorithm=ALGORITHM)
     
     return LoginResponse(token=token, message="Login successful")
+
+# Appointment Types endpoints
+@api_router.post("/appointment-types", response_model=AppointmentType)
+async def create_appointment_type(appointment_type: AppointmentTypeCreate, user=Depends(verify_token)):
+    type_dict = appointment_type.model_dump()
+    type_obj = AppointmentType(**type_dict)
+    
+    doc = type_obj.model_dump()
+    await db.appointment_types.insert_one(doc)
+    
+    return type_obj
+
+@api_router.get("/appointment-types", response_model=List[AppointmentType])
+async def get_appointment_types(user=Depends(verify_token)):
+    types = await db.appointment_types.find({}, {"_id": 0}).to_list(1000)
+    return types
+
+@api_router.put("/appointment-types/{type_id}", response_model=AppointmentType)
+async def update_appointment_type(type_id: str, type_update: AppointmentTypeUpdate, user=Depends(verify_token)):
+    existing = await db.appointment_types.find_one({"id": type_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Appointment type not found")
+    
+    update_data = type_update.model_dump(exclude_unset=True)
+    await db.appointment_types.update_one({"id": type_id}, {"$set": update_data})
+    
+    updated = await db.appointment_types.find_one({"id": type_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/appointment-types/{type_id}")
+async def delete_appointment_type(type_id: str, user=Depends(verify_token)):
+    # Check if any appointments use this type
+    appointments_count = await db.appointments.count_documents({"appointment_type_id": type_id})
+    if appointments_count > 0:
+        raise HTTPException(status_code=400, detail=f"Cannot delete: {appointments_count} appointments still use this type")
+    
+    result = await db.appointment_types.delete_one({"id": type_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Appointment type not found")
+    return {"message": "Appointment type deleted successfully"}
 
 # Appointments CRUD endpoints
 @api_router.post("/appointments", response_model=Appointment)
@@ -124,7 +180,7 @@ async def get_appointments(
     status: Optional[str] = None,
     client_name: Optional[str] = None,
     date: Optional[str] = None,
-    appointment_type: Optional[str] = None,
+    appointment_type_id: Optional[str] = None,
     user=Depends(verify_token)
 ):
     query = {}
@@ -134,10 +190,9 @@ async def get_appointments(
     if client_name:
         query['client_name'] = {"$regex": client_name, "$options": "i"}
     if date:
-        # Filter by date (pickup_time starts with the date)
         query['pickup_time'] = {"$regex": f"^{date}"}
-    if appointment_type:
-        query['appointment_type'] = appointment_type
+    if appointment_type_id:
+        query['appointment_type_id'] = appointment_type_id
     
     appointments = await db.appointments.find(query, {"_id": 0}).to_list(1000)
     return appointments
@@ -155,18 +210,15 @@ async def update_appointment(
     appointment_update: AppointmentUpdate,
     user=Depends(verify_token)
 ):
-    # Get existing appointment
     existing = await db.appointments.find_one({"id": appointment_id}, {"_id": 0})
     if not existing:
         raise HTTPException(status_code=404, detail="Appointment not found")
     
-    # Update only provided fields
     update_data = appointment_update.model_dump(exclude_unset=True)
     update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
     
     await db.appointments.update_one({"id": appointment_id}, {"$set": update_data})
     
-    # Get updated appointment
     updated = await db.appointments.find_one({"id": appointment_id}, {"_id": 0})
     return updated
 
