@@ -108,6 +108,24 @@ class AppointmentUpdate(BaseModel):
     appointment_type_id: Optional[str] = None
     status: Optional[str] = None
 
+class SMSTemplate(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    greeting: str = "您好，以下是我們接下來的行程："
+    fields: List[str] = Field(default_factory=lambda: [
+        "client_name", "type", "pickup_time", "pickup_location",
+        "arrival_time", "arrival_location", "flight_info", "other_details"
+    ])
+    closing: str = "期待為您服務！"
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class SMSTemplateUpdate(BaseModel):
+    greeting: Optional[str] = None
+    fields: Optional[List[str]] = None
+    closing: Optional[str] = None
+
 # Authentication function
 async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
