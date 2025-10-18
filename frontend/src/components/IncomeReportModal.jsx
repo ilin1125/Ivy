@@ -14,8 +14,13 @@ const API = `${BACKEND_URL}/api`;
 export default function IncomeReportModal({ onClose }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [selectedClient, setSelectedClient] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
   const [stats, setStats] = useState(null);
+  const [appointmentTypes, setAppointmentTypes] = useState([]);
+  const [clientAppointments, setClientAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showClientDetail, setShowClientDetail] = useState(false);
 
   const getAuthHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
