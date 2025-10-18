@@ -114,40 +114,28 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                 </div>
                 <div className="flex gap-2 flex-wrap">
                   {appointment.status === 'scheduled' && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onQuickStatusChange(appointment.id, 'in_progress')}
-                      className="hover:bg-yellow-50 hover:text-yellow-600 hover:border-yellow-200"
-                      title="開始行程"
-                      data-testid={`start-button-${appointment.id}`}
-                    >
-                      <Play className="w-4 h-4" />
-                    </Button>
-                  )}
-                  {appointment.status === 'in_progress' && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onQuickStatusChange(appointment.id, 'completed')}
-                      className="hover:bg-green-50 hover:text-green-600 hover:border-green-200"
-                      title="完成行程"
-                      data-testid={`complete-button-${appointment.id}`}
-                    >
-                      <CheckCircle className="w-4 h-4" />
-                    </Button>
-                  )}
-                  {(appointment.status === 'scheduled' || appointment.status === 'in_progress') && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onQuickStatusChange(appointment.id, 'cancelled')}
-                      className="hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                      title="取消行程"
-                      data-testid={`cancel-button-${appointment.id}`}
-                    >
-                      <XCircle className="w-4 h-4" />
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onQuickStatusChange(appointment.id, 'completed')}
+                        className="hover:bg-green-50 hover:text-green-600 hover:border-green-200"
+                        title="完成行程"
+                        data-testid={`complete-button-${appointment.id}`}
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onQuickStatusChange(appointment.id, 'cancelled')}
+                        className="hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                        title="取消行程"
+                        data-testid={`cancel-button-${appointment.id}`}
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </Button>
+                    </>
                   )}
                   <Button
                     size="sm"
