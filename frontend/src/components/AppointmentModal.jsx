@@ -169,7 +169,6 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="scheduled">已排程</SelectItem>
-                <SelectItem value="in_progress">進行中</SelectItem>
                 <SelectItem value="completed">已完成</SelectItem>
                 <SelectItem value="cancelled">已取消</SelectItem>
               </SelectContent>
@@ -178,7 +177,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="pickup_location">接送地點 *</Label>
+              <Label htmlFor="pickup_location">接客地點 *</Label>
               <Input
                 id="pickup_location"
                 value={formData.pickup_location}
@@ -189,7 +188,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, onClos
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="pickup_time">接送時間 *</Label>
+              <Label htmlFor="pickup_time">接客時間 *</Label>
               <Input
                 id="pickup_time"
                 type="datetime-local"
