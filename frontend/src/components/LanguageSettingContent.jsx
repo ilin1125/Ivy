@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Globe, Save } from 'lucide-react';
+import { Globe, Save, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
 const LANGUAGES = [
@@ -10,25 +10,34 @@ const LANGUAGES = [
   { code: 'en', name: 'English', nativeName: 'English' },
 ];
 
+const DATE_FORMATS = [
+  { code: 'MM/dd/yyyy', name: '月/日/年 (MM/dd/yyyy)', example: '10/18/2025' },
+  { code: 'dd/MM/yyyy', name: '日/月/年 (dd/MM/yyyy)', example: '18/10/2025' },
+];
+
 export default function LanguageSettingContent() {
   const [selectedLanguage, setSelectedLanguage] = useState('zh-TW');
+  const [selectedDateFormat, setSelectedDateFormat] = useState('MM/dd/yyyy');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // 從localStorage讀取語言設定
     const savedLanguage = localStorage.getItem('app_language') || 'zh-TW';
+    const savedDateFormat = localStorage.getItem('app_date_format') || 'MM/dd/yyyy';
     setSelectedLanguage(savedLanguage);
+    setSelectedDateFormat(savedDateFormat);
   }, []);
 
   const handleSave = async () => {
     setLoading(true);
     try {
       localStorage.setItem('app_language', selectedLanguage);
-      toast.success('語言設定已儲存');
+      localStorage.setItem('app_date_format', selectedDateFormat);
+      toast.success('設定已儲存');
       
-      // 提示用戶重新載入以應用語言設定
+      // 提示用戶重新載入以應用設定
       setTimeout(() => {
-        toast.info('請重新載入頁面以應用新的語言設定', {
+        toast.info('請重新載入頁面以應用新的設定', {
           duration: 5000,
           action: {
             label: '重新載入',
@@ -48,14 +57,15 @@ export default function LanguageSettingContent() {
       <div>
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Globe className="w-5 h-5" />
-          語言設定
+          語言與格式設定
         </h3>
         <p className="text-sm text-gray-600 mb-4">
-          選擇應用程式的顯示語言
+          選擇應用程式的顯示語言和日期格式
         </p>
       </div>
 
       <div className="space-y-4">
+        {/* 語言選擇 */}
         <div className="space-y-2">
           <Label>選擇語言</Label>
           <Card>
@@ -96,14 +106,66 @@ export default function LanguageSettingContent() {
           </Card>
         </div>
 
-        {/* Current Selection Display */}
+        {/* 日期格式選擇 */}
+        <div className="space-y-2">
+          <Label>日期格式</Label>
+          <Card>
+            <CardHeader>
+              <CardDescription>選擇日期顯示格式</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {DATE_FORMATS.map(format => (
+                  <div
+                    key={format.code}
+                    onClick={() => setSelectedDateFormat(format.code)}
+                    className={`
+                      p-4 rounded-lg border-2 cursor-pointer transition-all
+                      ${selectedDateFormat === format.code 
+                        ? 'border-green-500 bg-green-50' 
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-gray-900">{format.name}</div>
+                        <div className="text-sm text-gray-600 flex items-center gap-2">
+                          <Calendar className="w-3 h-3" />
+                          範例：{format.example}
+                        </div>
+                      </div>
+                      {selectedDateFormat === format.code && (
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* 當前選擇顯示 */}
         <Card className="bg-gray-50 border-gray-200">
           <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">目前選擇：</span>
-              <span className="font-semibold text-gray-900">
-                {LANGUAGES.find(l => l.code === selectedLanguage)?.nativeName}
-              </span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">目前語言：</span>
+                <span className="font-semibold text-gray-900">
+                  {LANGUAGES.find(l => l.code === selectedLanguage)?.nativeName}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">目前日期格式：</span>
+                <span className="font-semibold text-gray-900">
+                  {DATE_FORMATS.find(f => f.code === selectedDateFormat)?.example}
+                </span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -112,7 +174,7 @@ export default function LanguageSettingContent() {
         <Card className="bg-blue-50 border-blue-200">
           <CardContent className="p-4">
             <p className="text-sm text-blue-700">
-              💡 註：目前語言功能僅保存設定，完整的多語言翻譯將在未來版本中實現。
+              💡 註：目前語言功能僅保存設定，完整的多語言翻譯將在未來版本中實現。日期格式將立即應用於所有時間顯示。
             </p>
           </CardContent>
         </Card>
