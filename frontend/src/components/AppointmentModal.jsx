@@ -297,19 +297,20 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
 
             {/* 航班資訊和金額 */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="flight_info">航班資訊</Label>
+              <div className="space-y-1">
+                <Label htmlFor="flight_info" className="text-xs">航班資訊</Label>
                 <Input
                   id="flight_info"
                   value={formData.flight_info}
                   onChange={(e) => handleChange('flight_info', e.target.value)}
                   placeholder="例如：CI123"
+                  className="text-sm h-9"
                   data-testid="modal-flight-info"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="amount">金額（元）</Label>
+              <div className="space-y-1">
+                <Label htmlFor="amount" className="text-xs">金額（元）</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -318,20 +319,22 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
                   value={formData.amount}
                   onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
                   placeholder="請輸入金額"
+                  className="text-sm h-9"
                   data-testid="modal-amount"
                 />
               </div>
             </div>
 
             {/* 其他詳情 */}
-            <div className="space-y-1.5">
-              <Label htmlFor="other_details">其他詳情</Label>
+            <div className="space-y-1">
+              <Label htmlFor="other_details" className="text-xs">其他詳情</Label>
               <Textarea
                 id="other_details"
                 value={formData.other_details}
                 onChange={(e) => handleChange('other_details', e.target.value)}
                 placeholder="其他備註..."
                 rows={2}
+                className="text-sm"
                 data-testid="modal-other-details"
               />
             </div>
