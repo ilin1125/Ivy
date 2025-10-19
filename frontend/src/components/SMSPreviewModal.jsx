@@ -4,9 +4,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Copy, CheckCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { zhTW } from 'date-fns/locale';
 import axios from 'axios';
+import { formatDateTime } from '@/utils/dateFormat';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
