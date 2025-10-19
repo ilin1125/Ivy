@@ -29,11 +29,7 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
   const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const formatDateTime = (dateStr) => {
-    try {
-      return format(new Date(dateStr), 'MM/dd HH:mm', { locale: zhTW });
-    } catch {
-      return dateStr;
-    }
+    return formatShortDate(dateStr);
   };
 
   const isUpcoming = (dateStr) => {
