@@ -172,9 +172,10 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
           </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-3 py-4">
+            {/* 客戶姓名 */}
+            <div className="space-y-1.5">
               <Label htmlFor="client_name">客戶姓名 *</Label>
               <Input
                 id="client_name"
@@ -185,142 +186,150 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="appointment_type_id">預約類型 *</Label>
-              <Select value={formData.appointment_type_id} onValueChange={(value) => handleChange('appointment_type_id', value)}>
-                <SelectTrigger data-testid="modal-appointment-type">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {appointmentTypes.map(type => {
-                    const Icon = LucideIcons[type.icon] || LucideIcons.Circle;
-                    return (
-                      <SelectItem key={type.id} value={type.id}>
-                        <div className="flex items-center gap-2">
-                          <Icon className="w-4 h-4" />
-                          {type.name}
-                        </div>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
+            {/* 預約類型和狀態 - 並排 */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="appointment_type_id">預約類型</Label>
+                <Select value={formData.appointment_type_id} onValueChange={(value) => handleChange('appointment_type_id', value)}>
+                  <SelectTrigger data-testid="modal-appointment-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {appointmentTypes.map(type => {
+                      const Icon = LucideIcons[type.icon] || LucideIcons.Circle;
+                      return (
+                        <SelectItem key={type.id} value={type.id}>
+                          <div className="flex items-center gap-2">
+                            <Icon className="w-4 h-4" />
+                            {type.name}
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="status">狀態</Label>
+                <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
+                  <SelectTrigger data-testid="modal-status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="scheduled">已排程</SelectItem>
+                    <SelectItem value="completed">已完成</SelectItem>
+                    <SelectItem value="cancelled">已取消</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="status">狀態</Label>
-            <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
-              <SelectTrigger data-testid="modal-status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="scheduled">已排程</SelectItem>
-                <SelectItem value="completed">已完成</SelectItem>
-                <SelectItem value="cancelled">已取消</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* 接客時間和地點 */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="pickup_time">接客時間 *</Label>
+                <Input
+                  id="pickup_time"
+                  type="datetime-local"
+                  value={formData.pickup_time}
+                  onChange={(e) => handleChange('pickup_time', e.target.value)}
+                  required
+                  data-testid="modal-pickup-time"
+                />
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="pickup_time">接客時間 *</Label>
-              <Input
-                id="pickup_time"
-                type="datetime-local"
-                value={formData.pickup_time}
-                onChange={(e) => handleChange('pickup_time', e.target.value)}
-                required
-                data-testid="modal-pickup-time"
+              <div className="space-y-1.5">
+                <Label htmlFor="pickup_location">接客地點</Label>
+                <Input
+                  id="pickup_location"
+                  value={formData.pickup_location}
+                  onChange={(e) => handleChange('pickup_location', e.target.value)}
+                  data-testid="modal-pickup-location"
+                />
+              </div>
+            </div>
+
+            {/* 抵達時間和地點 */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="arrival_time">抵達時間</Label>
+                <Input
+                  id="arrival_time"
+                  type="datetime-local"
+                  value={formData.arrival_time}
+                  onChange={(e) => handleChange('arrival_time', e.target.value)}
+                  data-testid="modal-arrival-time"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="arrival_location">抵達地點</Label>
+                <Input
+                  id="arrival_location"
+                  value={formData.arrival_location}
+                  onChange={(e) => handleChange('arrival_location', e.target.value)}
+                  data-testid="modal-arrival-location"
+                />
+              </div>
+            </div>
+
+            {/* 時間驗證警告 */}
+            {(timeWarning || overlapWarning) && (
+              <div className="space-y-1.5">
+                {timeWarning && (
+                  <div className="text-red-600 text-xs font-medium bg-red-50 p-2 rounded border border-red-200">
+                    {timeWarning}
+                  </div>
+                )}
+                {overlapWarning && (
+                  <div className="text-amber-600 text-xs font-medium bg-amber-50 p-2 rounded border border-amber-200">
+                    {overlapWarning}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 航班資訊和金額 */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="flight_info">航班資訊</Label>
+                <Input
+                  id="flight_info"
+                  value={formData.flight_info}
+                  onChange={(e) => handleChange('flight_info', e.target.value)}
+                  placeholder="例如：CI123"
+                  data-testid="modal-flight-info"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="amount">金額（元）</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={formData.amount}
+                  onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
+                  placeholder="請輸入金額"
+                  data-testid="modal-amount"
+                />
+              </div>
+            </div>
+
+            {/* 其他詳情 */}
+            <div className="space-y-1.5">
+              <Label htmlFor="other_details">其他詳情</Label>
+              <Textarea
+                id="other_details"
+                value={formData.other_details}
+                onChange={(e) => handleChange('other_details', e.target.value)}
+                placeholder="其他備註..."
+                rows={2}
+                data-testid="modal-other-details"
               />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="pickup_location">接客地點</Label>
-              <Input
-                id="pickup_location"
-                value={formData.pickup_location}
-                onChange={(e) => handleChange('pickup_location', e.target.value)}
-                data-testid="modal-pickup-location"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="arrival_time">抵達時間</Label>
-              <Input
-                id="arrival_time"
-                type="datetime-local"
-                value={formData.arrival_time}
-                onChange={(e) => handleChange('arrival_time', e.target.value)}
-                data-testid="modal-arrival-time"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="arrival_location">抵達地點</Label>
-              <Input
-                id="arrival_location"
-                value={formData.arrival_location}
-                onChange={(e) => handleChange('arrival_location', e.target.value)}
-                data-testid="modal-arrival-location"
-              />
-            </div>
-          </div>
-
-          {/* 時間驗證警告 */}
-          {(timeWarning || overlapWarning) && (
-            <div className="space-y-2">
-              {timeWarning && (
-                <div className="text-red-600 text-sm font-medium bg-red-50 p-2 rounded-md border border-red-200">
-                  {timeWarning}
-                </div>
-              )}
-              {overlapWarning && (
-                <div className="text-amber-600 text-sm font-medium bg-amber-50 p-2 rounded-md border border-amber-200">
-                  {overlapWarning}
-                </div>
-              )}
-            </div>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="flight_info">航班資訊</Label>
-              <Input
-                id="flight_info"
-                value={formData.flight_info}
-                onChange={(e) => handleChange('flight_info', e.target.value)}
-                placeholder="例如：CI123"
-                data-testid="modal-flight-info"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="amount">金額（元）</Label>
-              <Input
-                id="amount"
-                type="number"
-                min="0"
-                step="1"
-                value={formData.amount}
-                onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
-                placeholder="請輸入金額"
-                data-testid="modal-amount"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="other_details">其他備註</Label>
-            <Textarea
-              id="other_details"
-              value={formData.other_details}
-              onChange={(e) => handleChange('other_details', e.target.value)}
-              rows={3}
-              placeholder="其他需要注意的事項..."
-              data-testid="modal-other-details"
-            />
           </div>
 
           <DialogFooter className="gap-2">
