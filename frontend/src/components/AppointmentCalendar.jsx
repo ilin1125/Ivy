@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { Clock, MapPin, Edit, Copy } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
+import { formatDate, formatShortDate } from '@/utils/dateFormat';
 
 const statusConfig = {
   scheduled: { label: '已排程', color: 'bg-blue-100 text-blue-700 border-blue-200' },
