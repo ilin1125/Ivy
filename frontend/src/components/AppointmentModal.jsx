@@ -93,7 +93,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
         const pickupTime = field === 'pickup_time' ? value : prev.pickup_time;
         const arrivalTime = field === 'arrival_time' ? value : prev.arrival_time;
         
-        // 檢查時間合理性
+        // 只有當兩個時間都有值時才檢查
         if (pickupTime && arrivalTime) {
           const pickup = new Date(pickupTime);
           const arrival = new Date(arrivalTime);
@@ -105,6 +105,15 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
             
             // 檢查時間重疊
             checkTimeOverlap(pickup, arrival);
+          }
+        } else {
+          // 如果抵達時間為空，清除警告
+          setTimeWarning('');
+          
+          // 如果只有接客時間，檢查是否與其他預約重疊
+          if (pickupTime && !arrivalTime) {
+            // 暫時不檢查重疊，因為沒有完整時間範圍
+            setOverlapWarning('');
           }
         }
       }
