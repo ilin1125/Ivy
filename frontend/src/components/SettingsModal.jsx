@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Grid3x3, Tag, MessageSquare } from 'lucide-react';
+import { Grid3x3, Tag, MessageSquare, Globe } from 'lucide-react';
 import PatternSetupContent from '@/components/PatternSetupContent';
 import TypeManagementContent from '@/components/TypeManagementContent';
 import SMSTemplateContent from '@/components/SMSTemplateContent';
+import LanguageSettingContent from '@/components/LanguageSettingContent';
 
 export default function SettingsModal({ types, onClose, onSave }) {
   const [activeTab, setActiveTab] = useState('types');
@@ -17,7 +18,7 @@ export default function SettingsModal({ types, onClose, onSave }) {
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="types" className="flex items-center gap-2">
               <Tag className="w-4 h-4" />
               類型設定
@@ -29,6 +30,10 @@ export default function SettingsModal({ types, onClose, onSave }) {
             <TabsTrigger value="sms" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               簡訊設定
+            </TabsTrigger>
+            <TabsTrigger value="language" className="flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              語言設定
             </TabsTrigger>
           </TabsList>
 
@@ -42,6 +47,10 @@ export default function SettingsModal({ types, onClose, onSave }) {
 
           <TabsContent value="sms" className="mt-0">
             <SMSTemplateContent />
+          </TabsContent>
+
+          <TabsContent value="language" className="mt-0">
+            <LanguageSettingContent />
           </TabsContent>
         </Tabs>
       </DialogContent>
