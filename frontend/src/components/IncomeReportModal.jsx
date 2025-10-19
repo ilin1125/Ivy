@@ -214,7 +214,7 @@ export default function IncomeReportModal({ onClose }) {
                       </div>
                       <div className="flex justify-between items-center mt-2">
                         <span className="text-gray-600">總金額：</span>
-                        <span className="text-2xl font-bold text-green-700">NT$ {clientDetailTotal.toLocaleString()}</span>
+                        <span className="text-2xl font-bold text-green-700">${clientDetailTotal.toLocaleString()}</span>
                       </div>
                     </div>
 
