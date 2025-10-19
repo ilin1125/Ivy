@@ -175,23 +175,24 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
         <form onSubmit={handleSubmit}>
           <div className="grid gap-3 py-4">
             {/* 客戶姓名 */}
-            <div className="space-y-1.5">
-              <Label htmlFor="client_name">客戶姓名 *</Label>
+            <div className="space-y-1">
+              <Label htmlFor="client_name" className="text-xs">客戶姓名 *</Label>
               <Input
                 id="client_name"
                 value={formData.client_name}
                 onChange={(e) => handleChange('client_name', e.target.value)}
                 required
+                className="text-sm h-9"
                 data-testid="modal-client-name"
               />
             </div>
 
             {/* 預約類型和狀態 - 並排 */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="appointment_type_id">預約類型</Label>
+              <div className="space-y-1">
+                <Label htmlFor="appointment_type_id" className="text-xs">預約類型</Label>
                 <Select value={formData.appointment_type_id} onValueChange={(value) => handleChange('appointment_type_id', value)}>
-                  <SelectTrigger data-testid="modal-appointment-type">
+                  <SelectTrigger className="text-sm h-9" data-testid="modal-appointment-type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -210,10 +211,10 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
                 </Select>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="status">狀態</Label>
+              <div className="space-y-1">
+                <Label htmlFor="status" className="text-xs">狀態</Label>
                 <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
-                  <SelectTrigger data-testid="modal-status">
+                  <SelectTrigger className="text-sm h-9" data-testid="modal-status">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
