@@ -239,7 +239,7 @@ export default function AppointmentList({ appointments, appointmentTypes, onEdit
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-green-600" />
                       <span className="text-sm text-gray-600">金額：</span>
-                      <span className="text-sm font-semibold text-green-700">NT$ {appointment.amount}</span>
+                      <span className="text-sm font-semibold text-green-700">${appointment.amount}</span>
                     </div>
                   )}
                   {appointment.other_details && (
