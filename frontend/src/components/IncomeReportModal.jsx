@@ -106,14 +106,6 @@ export default function IncomeReportModal({ onClose }) {
 
   const clientList = stats?.by_client ? Object.entries(stats.by_client).sort((a, b) => b[1].total - a[1].total) : [];
 
-  const formatDateTime = (dateStr) => {
-    try {
-      return format(new Date(dateStr), 'yyyy/MM/dd HH:mm', { locale: zhTW });
-    } catch {
-      return dateStr;
-    }
-  };
-
   const getTypeName = (typeId) => {
     const type = appointmentTypes.find(t => t.id === typeId);
     return type ? type.name : '未知類型';
