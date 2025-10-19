@@ -8,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DollarSign, Users, Calendar, ArrowLeft, MapPin, Clock } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { zhTW } from 'date-fns/locale';
+import { formatDateTime } from '@/utils/dateFormat';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
