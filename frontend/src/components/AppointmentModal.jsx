@@ -113,38 +113,58 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
 
   const handleChange = (field, value) => {
     setFormData(prev => {
-      const updated = { ...prev, [field]: value };
+      const newData = { ...prev, [field]: value };
       
-      // 當接客日期改變時，自動更新抵達日期為同一天，但保持原有時間
-      if (field === 'pickup_time' && prev.arrival_time) {
-        try {
-          const newPickupDate = new Date(value);
-          const oldArrivalDate = new Date(prev.arrival_time);
+      // 當接客時間或抵達時間變更時，進行即時驗證
+      if (field === 'pickup_time' || field === 'arrival_time') {
+        const pickupTime = field === 'pickup_time' ? value : prev.pickup_time;
+        const arrivalTime = field === 'arrival_time' ? value : prev.arrival_time;
+        
+        // 檢查時間合理性
+        if (pickupTime && arrivalTime) {
+          const pickup = new Date(pickupTime);
+          const arrival = new Date(arrivalTime);
           
-          // 設置抵達日期為接客日期，但保持原有時間
-          const newArrivalDate = new Date(
-            newPickupDate.getFullYear(),
-            newPickupDate.getMonth(),
-            newPickupDate.getDate(),
-            oldArrivalDate.getHours(),
-            oldArrivalDate.getMinutes()
-          );
-          
-          // 轉換為 datetime-local 格式
-          const year = newArrivalDate.getFullYear();
-          const month = String(newArrivalDate.getMonth() + 1).padStart(2, '0');
-          const day = String(newArrivalDate.getDate()).padStart(2, '0');
-          const hours = String(newArrivalDate.getHours()).padStart(2, '0');
-          const minutes = String(newArrivalDate.getMinutes()).padStart(2, '0');
-          
-          updated.arrival_time = `${year}-${month}-${day}T${hours}:${minutes}`;
-        } catch (e) {
-          console.error('Date sync error:', e);
+          if (pickup >= arrival) {
+            setTimeWarning('⚠️ 抵達時間必須晚於接客時間');
+          } else {
+            setTimeWarning('');
+            
+            // 檢查時間重疊
+            checkTimeOverlap(pickup, arrival);
+          }
         }
       }
       
-      return updated;
+      return newData;
     });
+  };
+
+  const checkTimeOverlap = (pickupTime, arrivalTime) => {
+    const hasOverlap = (allAppointments || []).some(apt => {
+      // 跳過當前編輯的預約
+      if (appointment?.id && apt.id === appointment.id) {
+        return false;
+      }
+      
+      const aptPickup = new Date(apt.pickup_time);
+      const aptArrival = new Date(apt.arrival_time);
+      
+      // 檢查時間是否重疊
+      const overlap = (
+        (pickupTime >= aptPickup && pickupTime < aptArrival) ||
+        (arrivalTime > aptPickup && arrivalTime <= aptArrival) ||
+        (pickupTime <= aptPickup && arrivalTime >= aptArrival)
+      );
+      
+      return overlap;
+    });
+    
+    if (hasOverlap) {
+      setOverlapWarning('⚠️ 警告：此時段與其他預約時間重疊');
+    } else {
+      setOverlapWarning('');
+    }
   };
 
   const getSelectedType = () => {
