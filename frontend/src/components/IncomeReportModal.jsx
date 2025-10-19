@@ -227,7 +227,7 @@ export default function IncomeReportModal({ onClose }) {
                               <div className="text-sm text-gray-600">{getTypeName(apt.appointment_type_id)}</div>
                             </div>
                             <div className="text-right">
-                              <div className="text-lg font-bold text-green-700">NT$ {(apt.amount || 0).toLocaleString()}</div>
+                              <div className="text-lg font-bold text-green-700">${(apt.amount || 0).toLocaleString()}</div>
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-2 text-sm">
