@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 import * as LucideIcons from 'lucide-react';
 
 const COLORS = [
@@ -19,7 +20,7 @@ const COLORS = [
   { value: '#64748b', badge: 'bg-slate-100 text-slate-700' },
 ];
 
-export default function AppointmentModal({ appointment, appointmentTypes, onClose, onSave }) {
+export default function AppointmentModal({ appointment, appointmentTypes, allAppointments, onClose, onSave }) {
   const [formData, setFormData] = useState({
     client_name: '',
     pickup_time: '',
