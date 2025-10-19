@@ -73,13 +73,13 @@ class Appointment(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
     pickup_time: str
-    pickup_location: str
-    arrival_time: str
-    arrival_location: str
+    pickup_location: Optional[str] = ""
+    arrival_time: Optional[str] = ""
+    arrival_location: Optional[str] = ""
     flight_info: Optional[str] = ""
     other_details: Optional[str] = ""
     amount: Optional[float] = 0  # 金額
-    appointment_type_id: str
+    appointment_type_id: Optional[str] = ""
     status: str = "scheduled"  # scheduled, completed, cancelled
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -87,13 +87,13 @@ class Appointment(BaseModel):
 class AppointmentCreate(BaseModel):
     client_name: str
     pickup_time: str
-    pickup_location: str
-    arrival_time: str
-    arrival_location: str
+    pickup_location: Optional[str] = ""
+    arrival_time: Optional[str] = ""
+    arrival_location: Optional[str] = ""
     flight_info: Optional[str] = ""
     other_details: Optional[str] = ""
     amount: Optional[float] = 0
-    appointment_type_id: str
+    appointment_type_id: Optional[str] = ""
     status: Optional[str] = "scheduled"
 
 class AppointmentUpdate(BaseModel):
