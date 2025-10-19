@@ -44,7 +44,7 @@ export default function SMSPreviewModal({ appointment, appointmentTypes, onClose
 
   const formatDateTime = (dateStr) => {
     try {
-      return format(new Date(dateStr), 'yyyy年MM月dd日 HH:mm', { locale: zhTW });
+      return format(new Date(dateStr), 'yyyy/MM/dd HH:mm', { locale: zhTW });
     } catch {
       return dateStr;
     }
