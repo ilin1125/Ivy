@@ -342,6 +342,7 @@ export default function Dashboard({ onLogout }) {
         <AppointmentModal
           appointment={editingAppointment}
           appointmentTypes={appointmentTypes}
+          allAppointments={appointments}
           onClose={() => setShowModal(false)}
           onSave={handleSaveAppointment}
         />
