@@ -63,51 +63,24 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // 驗證接客時間和抵達時間
-    const pickupTime = new Date(formData.pickup_time);
-    const arrivalTime = new Date(formData.arrival_time);
-    
-    // 檢查時間是否合理
-    if (pickupTime >= arrivalTime) {
-      toast.error('抵達時間必須晚於接客時間');
+    // 如果有時間錯誤，阻止提交
+    if (timeWarning) {
+      toast.error('請修正時間設定：抵達時間必須晚於接客時間');
       return;
-    }
-    
-    // 檢查時間重疊
-    const hasOverlap = (allAppointments || []).some(apt => {
-      // 跳過當前編輯的預約
-      if (appointment?.id && apt.id === appointment.id) {
-        return false;
-      }
-      
-      const aptPickup = new Date(apt.pickup_time);
-      const aptArrival = new Date(apt.arrival_time);
-      
-      // 檢查時間是否重疊：
-      // 新預約的接客時間在現有預約的時間範圍內，或
-      // 新預約的抵達時間在現有預約的時間範圍內，或
-      // 新預約完全包含現有預約
-      const overlap = (
-        (pickupTime >= aptPickup && pickupTime < aptArrival) ||
-        (arrivalTime > aptPickup && arrivalTime <= aptArrival) ||
-        (pickupTime <= aptPickup && arrivalTime >= aptArrival)
-      );
-      
-      return overlap;
-    });
-    
-    if (hasOverlap) {
-      toast.warning('警告：此時段與其他預約時間重疊，請確認是否繼續', {
-        duration: 5000
-      });
     }
     
     const submitData = {
       ...formData,
-      pickup_time: pickupTime.toISOString(),
-      arrival_time: arrivalTime.toISOString(),
+      pickup_time: new Date(formData.pickup_time).toISOString(),
+      arrival_time: new Date(formData.arrival_time).toISOString(),
       amount: formData.amount === '' || formData.amount === null || formData.amount === undefined ? 0 : Number(formData.amount)
     };
+    
+    // 如果有重疊警告，仍然允許儲存（只是警告）
+    if (overlapWarning) {
+      toast.warning('提醒：此預約與其他預約時間重疊', { duration: 3000 });
+    }
+    
     onSave(submitData);
   };
 
