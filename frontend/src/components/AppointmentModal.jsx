@@ -227,12 +227,11 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="pickup_location">接客地點 *</Label>
+              <Label htmlFor="pickup_location">接客地點</Label>
               <Input
                 id="pickup_location"
                 value={formData.pickup_location}
                 onChange={(e) => handleChange('pickup_location', e.target.value)}
-                required
                 data-testid="modal-pickup-location"
               />
             </div>
@@ -240,24 +239,22 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="arrival_time">抵達時間 *</Label>
+              <Label htmlFor="arrival_time">抵達時間</Label>
               <Input
                 id="arrival_time"
                 type="datetime-local"
                 value={formData.arrival_time}
                 onChange={(e) => handleChange('arrival_time', e.target.value)}
-                required
                 data-testid="modal-arrival-time"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="arrival_location">抵達地點 *</Label>
+              <Label htmlFor="arrival_location">抵達地點</Label>
               <Input
                 id="arrival_location"
                 value={formData.arrival_location}
                 onChange={(e) => handleChange('arrival_location', e.target.value)}
-                required
                 data-testid="modal-arrival-location"
               />
             </div>
