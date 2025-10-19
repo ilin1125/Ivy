@@ -34,6 +34,9 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
     status: 'scheduled'
   });
 
+  const [timeWarning, setTimeWarning] = useState('');
+  const [overlapWarning, setOverlapWarning] = useState('');
+
   useEffect(() => {
     if (appointmentTypes.length > 0 && !appointment) {
       setFormData(prev => ({ ...prev, appointment_type_id: appointmentTypes[0].id }));
