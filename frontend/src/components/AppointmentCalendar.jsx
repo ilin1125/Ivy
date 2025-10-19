@@ -96,7 +96,7 @@ export default function AppointmentCalendar({ appointments, appointmentTypes, on
       <Card className="lg:col-span-2 bg-white shadow-lg border-0">
         <CardHeader>
           <CardTitle className="text-lg">
-            {format(selectedDate, 'yyyy年MM月dd日 EEEE', { locale: zhTW })}
+            {format(selectedDate, 'yyyy/MM/dd (E)', { locale: zhTW })}
           </CardTitle>
         </CardHeader>
         <CardContent>
