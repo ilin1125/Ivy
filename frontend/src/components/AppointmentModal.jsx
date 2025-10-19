@@ -226,49 +226,53 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
             </div>
 
             {/* 接客時間和地點 */}
-            <div className="grid grid-cols-1 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="pickup_time">接客時間 *</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="pickup_time" className="text-xs">接客時間 *</Label>
                 <Input
                   id="pickup_time"
                   type="datetime-local"
                   value={formData.pickup_time}
                   onChange={(e) => handleChange('pickup_time', e.target.value)}
                   required
+                  className="text-sm h-9"
                   data-testid="modal-pickup-time"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="pickup_location">接客地點</Label>
+              <div className="space-y-1">
+                <Label htmlFor="pickup_location" className="text-xs">接客地點</Label>
                 <Input
                   id="pickup_location"
                   value={formData.pickup_location}
                   onChange={(e) => handleChange('pickup_location', e.target.value)}
+                  className="text-sm h-9"
                   data-testid="modal-pickup-location"
                 />
               </div>
             </div>
 
             {/* 抵達時間和地點 */}
-            <div className="grid grid-cols-1 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="arrival_time">抵達時間</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="arrival_time" className="text-xs">抵達時間</Label>
                 <Input
                   id="arrival_time"
                   type="datetime-local"
                   value={formData.arrival_time}
                   onChange={(e) => handleChange('arrival_time', e.target.value)}
+                  className="text-sm h-9"
                   data-testid="modal-arrival-time"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="arrival_location">抵達地點</Label>
+              <div className="space-y-1">
+                <Label htmlFor="arrival_location" className="text-xs">抵達地點</Label>
                 <Input
                   id="arrival_location"
                   value={formData.arrival_location}
                   onChange={(e) => handleChange('arrival_location', e.target.value)}
+                  className="text-sm h-9"
                   data-testid="modal-arrival-location"
                 />
               </div>
