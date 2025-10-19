@@ -290,6 +290,21 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
             </div>
           </div>
 
+          {/* 時間驗證警告 */}
+          {(timeWarning || overlapWarning) && (
+            <div className="space-y-2">
+              {timeWarning && (
+                <div className="text-red-600 text-sm font-medium bg-red-50 p-2 rounded-md border border-red-200">
+                  {timeWarning}
+                </div>
+              )}
+              {overlapWarning && (
+                <div className="text-amber-600 text-sm font-medium bg-amber-50 p-2 rounded-md border border-amber-200">
+                  {overlapWarning}
+                </div>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="flight_info">航班資訊</Label>
