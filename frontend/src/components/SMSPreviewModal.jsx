@@ -41,14 +41,6 @@ export default function SMSPreviewModal({ appointment, appointmentTypes, onClose
     }
   };
 
-  const formatDateTime = (dateStr) => {
-    try {
-      return format(new Date(dateStr), 'yyyy/MM/dd HH:mm', { locale: zhTW });
-    } catch {
-      return dateStr;
-    }
-  };
-
   const getTypeName = (typeId) => {
     const type = appointmentTypes.find(t => t.id === typeId);
     return type ? type.name : '';
