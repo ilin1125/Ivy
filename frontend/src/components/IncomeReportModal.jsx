@@ -267,7 +267,7 @@ export default function IncomeReportModal({ onClose }) {
                   </CardHeader>
                   <CardContent>
                     <p className="text-3xl font-bold text-green-700">
-                      NT$ {stats.total_income.toLocaleString()}
+                      ${stats.total_income.toLocaleString()}
                     </p>
                   </CardContent>
                 </Card>
