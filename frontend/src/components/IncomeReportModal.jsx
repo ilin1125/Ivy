@@ -314,7 +314,7 @@ export default function IncomeReportModal({ onClose }) {
                           <div className="font-medium text-gray-900">{clientName}</div>
                           <div className="text-center text-gray-600">{data.count} 趟</div>
                           <div className="text-right font-semibold text-green-700">
-                            NT$ {data.total.toLocaleString()}
+                            ${data.total.toLocaleString()}
                           </div>
                           <div className="text-center">
                             <Button
