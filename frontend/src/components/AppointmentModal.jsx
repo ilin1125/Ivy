@@ -226,7 +226,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
             </div>
 
             {/* 接客時間和地點 */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="pickup_time">接客時間 *</Label>
                 <Input
@@ -251,7 +251,7 @@ export default function AppointmentModal({ appointment, appointmentTypes, allApp
             </div>
 
             {/* 抵達時間和地點 */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="arrival_time">抵達時間</Label>
                 <Input
