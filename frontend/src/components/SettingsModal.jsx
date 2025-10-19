@@ -33,7 +33,7 @@ export default function SettingsModal({ types, onClose, onSave }) {
             </TabsTrigger>
             <TabsTrigger value="language" className="flex items-center gap-2">
               <Globe className="w-4 h-4" />
-              語言設定
+              語言/日期
             </TabsTrigger>
           </TabsList>
 
