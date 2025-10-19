@@ -206,7 +206,7 @@ export default function Dashboard({ onLogout }) {
               <p className="text-sm text-gray-600 mt-1">
                 即將到來的預約：<span className="font-semibold text-blue-600">{getUpcomingCount()}</span> 個
                 <span className="mx-2">|</span>
-                當月收入：<span className="font-semibold text-green-600">NT$ {totalIncome.toLocaleString()}</span>
+                當月收入：<span className="font-semibold text-green-600">${totalIncome.toLocaleString()}</span>
                 {isRemembered && <span className="ml-3 text-green-600">● 已啟用自動登入</span>}
               </p>
             </div>
