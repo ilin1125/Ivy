@@ -74,7 +74,6 @@ export default function AppointmentCalendar({ appointments, appointmentTypes, on
             mode="single"
             selected={selectedDate}
             onSelect={setSelectedDate}
-            locale={zhTW}
             className="rounded-md border"
             modifiers={{
               hasAppointment: appointmentDates
