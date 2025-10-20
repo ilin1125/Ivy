@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Globe, Save, Calendar } from 'lucide-react';
+import { Globe, Save, Calendar, Type } from 'lucide-react';
 import { toast } from 'sonner';
 
 const LANGUAGES = [
@@ -15,17 +15,27 @@ const DATE_FORMATS = [
   { code: 'dd/MM/yyyy', name: '日/月/年 (dd/MM/yyyy)', example: '18/10/2025' },
 ];
 
+const FONT_SIZES = [
+  { code: 'small', name: '小', description: '適合一般使用' },
+  { code: 'medium', name: '中', description: '預設大小' },
+  { code: 'large', name: '大', description: '適合年長者' },
+  { code: 'xlarge', name: '特大', description: '最大字體' },
+];
+
 export default function LanguageSettingContent() {
   const [selectedLanguage, setSelectedLanguage] = useState('zh-TW');
   const [selectedDateFormat, setSelectedDateFormat] = useState('MM/dd/yyyy');
+  const [selectedFontSize, setSelectedFontSize] = useState('medium');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // 從localStorage讀取語言設定
+    // 從localStorage讀取設定
     const savedLanguage = localStorage.getItem('app_language') || 'zh-TW';
     const savedDateFormat = localStorage.getItem('app_date_format') || 'MM/dd/yyyy';
+    const savedFontSize = localStorage.getItem('app_font_size') || 'medium';
     setSelectedLanguage(savedLanguage);
     setSelectedDateFormat(savedDateFormat);
+    setSelectedFontSize(savedFontSize);
   }, []);
 
   const handleSave = async () => {
@@ -33,11 +43,16 @@ export default function LanguageSettingContent() {
     try {
       localStorage.setItem('app_language', selectedLanguage);
       localStorage.setItem('app_date_format', selectedDateFormat);
+      localStorage.setItem('app_font_size', selectedFontSize);
+      
+      // 立即應用字體大小
+      applyFontSize(selectedFontSize);
+      
       toast.success('設定已儲存');
       
-      // 提示用戶重新載入以應用設定
+      // 提示用戶重新載入以應用其他設定
       setTimeout(() => {
-        toast.info('請重新載入頁面以應用新的設定', {
+        toast.info('請重新載入頁面以完全應用所有設定', {
           duration: 5000,
           action: {
             label: '重新載入',
@@ -49,6 +64,26 @@ export default function LanguageSettingContent() {
       toast.error('儲存失敗');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const applyFontSize = (size) => {
+    const root = document.documentElement;
+    switch(size) {
+      case 'small':
+        root.style.fontSize = '14px';
+        break;
+      case 'medium':
+        root.style.fontSize = '16px';
+        break;
+      case 'large':
+        root.style.fontSize = '18px';
+        break;
+      case 'xlarge':
+        root.style.fontSize = '20px';
+        break;
+      default:
+        root.style.fontSize = '16px';
     }
   };
 
