@@ -14,8 +14,33 @@ function App() {
     if (token) {
       setIsAuthenticated(true);
     }
+    
+    // Initialize font size from localStorage
+    const savedFontSize = localStorage.getItem('app_font_size') || 'medium';
+    applyFontSize(savedFontSize);
+    
     setLoading(false);
   }, []);
+
+  const applyFontSize = (size) => {
+    const root = document.documentElement;
+    switch(size) {
+      case 'small':
+        root.style.fontSize = '14px';
+        break;
+      case 'medium':
+        root.style.fontSize = '16px';
+        break;
+      case 'large':
+        root.style.fontSize = '18px';
+        break;
+      case 'xlarge':
+        root.style.fontSize = '20px';
+        break;
+      default:
+        root.style.fontSize = '16px';
+    }
+  };
 
   const handleLogin = (token) => {
     localStorage.setItem('token', token);
