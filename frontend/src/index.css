@@ -113,3 +113,92 @@ code {
         border-bottom-color: inherit;
     }
 }
+
+/* Font size support */
+@layer base {
+    html {
+        font-size: 16px; /* Default medium size */
+    }
+    
+    /* Font size classes for dynamic sizing */
+    .font-size-small {
+        font-size: 14px;
+    }
+    
+    .font-size-medium {
+        font-size: 16px;
+    }
+    
+    .font-size-large {
+        font-size: 18px;
+    }
+    
+    .font-size-xlarge {
+        font-size: 20px;
+    }
+}
+
+/* Mobile landscape orientation support */
+@layer utilities {
+    /* Mobile landscape (phones in landscape) */
+    @media screen and (max-height: 500px) and (orientation: landscape) {
+        .space-y-6 > * + * {
+            margin-top: 1rem !important;
+        }
+        
+        .space-y-4 > * + * {
+            margin-top: 0.75rem !important;
+        }
+        
+        .space-y-3 > * + * {
+            margin-top: 0.5rem !important;
+        }
+        
+        .p-4 {
+            padding: 0.75rem !important;
+        }
+        
+        .mb-4 {
+            margin-bottom: 0.75rem !important;
+        }
+        
+        /* Reduce card padding in landscape */
+        .grid-cols-2 {
+            gap: 0.5rem !important;
+        }
+        
+        /* Make text smaller in landscape for better fit */
+        .text-lg {
+            font-size: 1rem !important;
+        }
+        
+        .text-sm {
+            font-size: 0.75rem !important;
+        }
+        
+        .text-xs {
+            font-size: 0.625rem !important;
+        }
+    }
+    
+    /* Tablet landscape */
+    @media screen and (min-width: 768px) and (max-height: 600px) and (orientation: landscape) {
+        .container {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    }
+    
+    /* Better responsive grid for font size selection */
+    @media screen and (max-width: 640px) {
+        .grid-cols-2 {
+            grid-template-columns: 1fr !important;
+        }
+    }
+    
+    @media screen and (min-width: 641px) and (max-width: 768px) {
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+}
