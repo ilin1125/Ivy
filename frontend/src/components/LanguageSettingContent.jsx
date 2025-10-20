@@ -95,11 +95,55 @@ export default function LanguageSettingContent() {
           語言與格式設定
         </h3>
         <p className="text-sm text-gray-600 mb-4">
-          選擇應用程式的顯示語言和日期格式
+          選擇應用程式的顯示語言、日期格式和字體大小
         </p>
       </div>
 
       <div className="space-y-4">
+        {/* 字體大小選擇 */}
+        <div className="space-y-2">
+          <Label>字體大小</Label>
+          <Card>
+            <CardHeader>
+              <CardDescription>選擇適合您的字體大小</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                {FONT_SIZES.map(size => (
+                  <div
+                    key={size.code}
+                    onClick={() => setSelectedFontSize(size.code)}
+                    className={`
+                      p-4 rounded-lg border-2 cursor-pointer transition-all
+                      ${selectedFontSize === size.code 
+                        ? 'border-purple-500 bg-purple-50' 
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-gray-900 flex items-center gap-2">
+                          <Type className="w-4 h-4" />
+                          {size.name}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">{size.description}</div>
+                      </div>
+                      {selectedFontSize === size.code && (
+                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* 語言選擇 */}
         <div className="space-y-2">
           <Label>選擇語言</Label>
@@ -190,6 +234,12 @@ export default function LanguageSettingContent() {
           <CardContent className="p-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">目前字體：</span>
+                <span className="font-semibold text-gray-900">
+                  {FONT_SIZES.find(s => s.code === selectedFontSize)?.name}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">目前語言：</span>
                 <span className="font-semibold text-gray-900">
                   {LANGUAGES.find(l => l.code === selectedLanguage)?.nativeName}
@@ -209,7 +259,7 @@ export default function LanguageSettingContent() {
         <Card className="bg-blue-50 border-blue-200">
           <CardContent className="p-4">
             <p className="text-sm text-blue-700">
-              💡 註：目前語言功能僅保存設定，完整的多語言翻譯將在未來版本中實現。日期格式將立即應用於所有時間顯示。
+              💡 註：字體大小會立即生效。語言功能僅保存設定，完整的多語言翻譯將在未來版本中實現。
             </p>
           </CardContent>
         </Card>
