@@ -29,7 +29,9 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm install --legacy-peer-deps
+        run: |
+          npm install --force
+          npm install @craco/craco react react-dom react-scripts --force
 
       - name: Build React app
         working-directory: frontend
@@ -52,4 +54,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        
