@@ -460,7 +460,7 @@ agent_communication:
       ❌ 新增預約功能日期選擇測試發現關鍵問題
       
       📋 測試執行摘要：
-      - 測試環境：https://driver-appointments.preview.emergentagent.com
+      - 測試環境：https://driver-scheduler-1.preview.emergentagent.com
       - 登入方式：密碼登入 (driver123) ✅
       - 測試重點：AppointmentModal 日期選擇器功能
       
@@ -580,7 +580,7 @@ agent_communication:
       📋 測試執行摘要：
       
       🎯 測試範圍：收入報表Modal中的日期選擇器功能
-      - 測試環境：https://driver-appointments.preview.emergentagent.com
+      - 測試環境：https://driver-scheduler-1.preview.emergentagent.com
       - 登入方式：密碼登入 (driver123)
       - 測試重點：日期選擇器的完整功能驗證
       
@@ -608,7 +608,7 @@ agent_communication:
       ✅ 用戶指定測試項目完成 - 三項測試結果報告
       
       📋 測試執行摘要：
-      - 測試環境：https://driver-appointments.preview.emergentagent.com
+      - 測試環境：https://driver-scheduler-1.preview.emergentagent.com
       - 登入方式：密碼登入 (driver123)
       - 測試日期：2025年1月18日
       
@@ -649,7 +649,7 @@ agent_communication:
       ✅ 最終完整測試完成 - 用戶指定三項測試結果
       
       📋 測試執行摘要：
-      - 測試環境：https://driver-appointments.preview.emergentagent.com
+      - 測試環境：https://driver-scheduler-1.preview.emergentagent.com
       - 登入方式：密碼登入 (driver123)
       - 測試日期：2025年1月18日
       

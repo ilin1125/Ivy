@@ -1,133 +1,98 @@
 <analysis>
-The AI engineer successfully built a driving appointments tracking application from scratch, iteratively adding features based on user feedback. The process started with clarifying core requirements, then proceeded with initial implementation in FastAPI (backend) and React (frontend), with MongoDB for data persistence, all in Traditional Chinese. Early tests by a testing agent quickly identified and fixed UI issues. Subsequent iterations focused on enhancing user experience: implementing color-coded appointment types, robust authentication (password, 4x4 pattern lock, remember me), a unified settings interface, and crucial features like appointment duplication and income tracking. Data migration was performed to adapt to new schema changes, demonstrating a systematic approach to evolving requirements and technical challenges. The work concluded with refining the income reporting and form layout, showcasing continuous improvement and responsiveness to detailed user requests.
+The AI engineer's trajectory chronicles a diligent and iterative development process for a driving appointment management application. Starting from an MVP, the engineer systematically addressed user feedback to expand functionality and improve user experience. Key accomplishments include implementing robust authentication (pattern lock, remember me), comprehensive appointment management (duplication, status updates), and a detailed income reporting system with various filters. Significant effort was dedicated to UI/UX refinements, such as form layout optimization, full Traditional Chinese localization for calendars and labels, and real-time input validation for time conflicts. The engineer also introduced SMS notification generation, configurable settings (appointment types, SMS templates, language, date format), and addressed issues like invisible buttons and date picker usability. The work consistently demonstrated a responsiveness to detailed user requests, culminating in efforts to enhance accessibility through font size adjustment and ensuring mobile landscape responsiveness.
 </analysis>
 
 <product_requirements>
-The user, a driver named 輝哥, required a full-stack application to track driving appointments. The app needed to support:
-1.  **Appointment Management:** Capture client name, pickup time/location, expected arrival time/location, flight information, and other details.
-2.  **Multilingual Support:** All UI and functionalities must be in Traditional Chinese.
-3.  **Views:** Both list and calendar views for appointments, with the calendar view resembling Google Calendar, showing up to five events per day.
-4.  **Authentication:**
-    *   Password login.
-    *   A 4x4 image pattern unlock option.
-    *   A Remember Me (自動登入) feature for password-less access.
-5.  **Customization:**
-    *   Ability for the driver to set custom appointment types, including text, icons, and colors.
-    *   All these settings (圖案設定 and 類型設定) should be unified under a single 設定 interface with tabs.
-6.  **Data Persistence & Backup:** All data to be backed up to MongoDB (雲端 MongoDB).
-7.  **Enhanced Usability:**
-    *   Easy move, delete, and change appointments.
-    *   複製行程 (Duplicate Appointment) functionality to quickly create recurring appointments, pre-filling data and automatically syncing pickup/arrival dates/times.
-    *   接送 (Pickup) terminology to be changed to 接客.
-    *   行李數量 (Luggage Count) field initially, then changed to 行李/人數 (Luggage/Passengers) with driver input, then temporarily removed, and finally re-added.
-8.  **Financial Tracking:**
-    *   Income calculation and a 儲值 (top-up) mechanism.
-    *   Amount field for each appointment should be editable, not fixed at zero.
-    *   Income report showing total and per-client income within a specified date range. This report should also include filtering by 類型 (type), remove 平均收入, and display 當月收入 on the homepage.
-9.  **Form Layout:** Optimized form layout with 接客時間 and 接客地點 on one line, and 抵達時間 and 抵達地點 on one line.
+The user, 輝哥, required a full-stack application to track driving appointments with Traditional Chinese UI. Key features included:
+1.  **Appointment Management:** Capture client, pickup/arrival time/location, flight info; support creation, editing, deletion, and duplication.
+2.  **Views:** List and calendar views (Google Calendar-like, showing up to 5 events/day).
+3.  **Authentication:** Password, 4x4 pattern lock, Remember Me (自動登入).
+4.  **Customization:** Custom appointment types (name, icon, color); unified settings interface (圖案設定, 類型設定, 簡訊模板設定, 語言/日期).
+5.  **Financial Tracking:** Editable amount field; income report (total, per-client, date range, type filter, no average income); 當月收入 on dashboard.
+6.  **Usability & Localization:** 接送 to 接客; 行李數量 to 行李/人數 (later removed); easy move, delete, change appointments; generate copy-pasteable SMS notifications (excluding amount, fixed greeting/closing); 別的駕駛 to 代理駕駛; full Chinese localization for calendars (months as numbers, weekdays); remove NT currency symbol; real-time validation for time overlaps and unreasonable inputs.
+7.  **Form & Display Refinements:** Only 客戶姓名 and 接客時間 are mandatory, 預約類型 is optional; optimized form layout (side-by-side time/location fields, reduced scroll length, other fields compact); shortened time display (e.g., MM/dd HH:mm); date format selection (mm/dd/yyyy, dd/mm/yyyy); rename 語言設定 tab to 語言/日期.
+8.  **Accessibility & Responsiveness:** Font size adjustment; mobile landscape view support.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-stack Development:** FastAPI (backend), React (frontend), MongoDB (database).
--   **UI Components:** Shadcn UI for modern, accessible components (Calendar, Dropdown, Toast).
--   **Authentication:** Password-based, 4x4 pattern lock, Remember Me (localStorage-based).
--   **Data Management:** CRUD operations, Pydantic for data models, data migration scripts.
--   **Internationalization:** Traditional Chinese localization.
--   **State Management:** React hooks for local component state.
+-   **UI Components:** Shadcn UI (Calendar, Dropdown, Toast, Popover, Tabs).
+-   **Authentication:** Password, 4x4 pattern lock, JWT, Remember Me (localStorage).
+-   **Data Management:** CRUD, Pydantic, data migration scripts (Python).
+-   **Internationalization:** Traditional Chinese localization ( locale).
+-   **State Management:** React hooks (, ), .
+-   **Responsive Design:** CSS media queries, flexbox/grid layouts.
 </key_technical_concepts>
 
 <code_architecture>
-The application follows a standard full-stack architecture with a FastAPI backend, a React frontend, and MongoDB as the database.
 
 
 
--   **/app/backend/server.py**: The main FastAPI application file.
-    -   **Importance:** Defines all API endpoints (authentication, appointments, types, income statistics), MongoDB interactions, and Pydantic models.
-    -   **Changes Made:**
-        -   Initial CRUD for appointments.
-        -   Added , ,  fields to models (with interim removals and re-additions).
-        -   Implemented endpoints for authentication (password, pattern login).
-        -   Added endpoints for managing custom appointment types.
-        -   Introduced  for income calculation, supporting filtering by date range, client, and types.
-        -   Updated status enumeration (removed 進行中).
-        -   Logic for duplicating appointments.
--   **/app/backend/.env**: Environment variables for the backend.
-    -   **Importance:** Stores  for database connection and  for authentication.
-    -   **Changes Made:** Added .
+-   **/app/backend/server.py**: Main FastAPI application.
+    -   **Importance:** Defines API endpoints, MongoDB interactions, Pydantic models.
+    -   **Changes Made:** Removed  from  models. Added  model and API endpoints (). Made fields like , ,  optional in models.
 -   **/app/frontend/src/pages/Login.jsx**: Handles user login.
-    -   **Importance:** Provides UI for password and pattern lock login.
-    -   **Changes Made:** Integrated  component, added Remember Me functionality, UI for switching between login methods.
+    -   **Importance:** Provides UI for password/pattern login.
+    -   **Changes Made:** Updated app name display to 駕駛預約管理.
 -   **/app/frontend/src/pages/Dashboard.jsx**: The main application dashboard.
-    -   **Importance:** Orchestrates the display of appointments, settings, and income reports.
-    -   **Changes Made:**
-        -   Integrated ,  components.
-        -   Added buttons for 設定 (Settings) and 收入報表 (Income Report).
-        -   Integrated , , , .
-        -   Implemented logic for displaying current month's income.
-        -   Handles creation, editing, deletion, and duplication of appointments.
+    -   **Importance:** Orchestrates appointment display, settings, and income reports.
+    -   **Changes Made:** Displayed 當月收入. Updated app name. Passed  to  for overlap checks.
 -   **/app/frontend/src/App.js**: Main React component.
-    -   **Importance:** Manages routing and global application state, including authentication.
-    -   **Changes Made:** Implemented logic for checking Remember Me status and automatic login.
+    -   **Importance:** Manages routing and global state, including authentication and font size.
+    -   **Changes Made:** Contains logic for  and  for initial font size application.
 -   **/app/frontend/src/components/AppointmentModal.jsx**: Modal for creating/editing appointments.
     -   **Importance:** Form for entering appointment details.
-    -   **Changes Made:**
-        -   Dynamic fields for client name, pickup/arrival details, flight info, etc.
-        -   Integrated  and  for date/time and type selection.
-        -   Added  input field.
-        -   Implemented date synchronization logic (pickup date automatically sets arrival date).
-        -   Added  input field (re-added).
+    -   **Changes Made:** Optimized layout for two-column (time/location) display. Removed . Made most fields optional. Implemented real-time and submit-time validation for time reasonableness and overlaps.
 -   **/app/frontend/src/components/AppointmentList.jsx**: Displays appointments in a list.
-    -   **Importance:** Renders individual appointment cards with action buttons.
-    -   **Changes Made:**
-        -   Integrated custom appointment type colors and icons.
-        -   Added 複製行程 (Duplicate Appointment) button.
-        -   Removed 進行中 status buttons.
-        -   Added display for .
--   **/app/frontend/src/components/AppointmentCalendar.jsx**: Displays appointments in a calendar view.
-    -   **Importance:** Visual representation of appointments similar to Google Calendar.
-    -   **Changes Made:**
-        -   Improved layout to show up to 5 events per day.
-        -   Integrated custom appointment type colors.
--   **/app/frontend/src/components/PatternLock.jsx**: New component for the 4x4 pattern unlock UI.
-    -   **Importance:** Provides the interactive grid for pattern-based authentication.
--   **/app/frontend/src/components/PatternSetupModal.jsx**: Modal for setting/changing the pattern.
-    -   **Importance:** Allows users to configure their pattern unlock.
--   **/app/frontend/src/components/TypeManagementModal.jsx**: Modal for managing custom appointment types.
-    -   **Importance:** UI for adding, editing, and deleting appointment types with custom names, colors, and icons.
-    -   **Changes Made:** Its content was refactored into  for the unified settings modal.
--   **/app/frontend/src/components/IncomeReportModal.jsx**: New component for the income report.
-    -   **Importance:** Displays financial summaries, including total income, completed trips, and client-wise breakdown.
-    -   **Changes Made:** Integrated date range selector, statistical cards, and a detailed client income table.
--   **/app/frontend/src/components/SettingsModal.jsx**: New unified modal for 設定.
-    -   **Importance:** Consolidates Pattern Setup and Type Management into a single interface with tabbed navigation.
--   **/app/frontend/src/components/PatternSetupContent.jsx**: Content for pattern setup within .
--   **/app/frontend/src/components/TypeManagementContent.jsx**: Content for type management within .
--   **/app/scripts/migrate_data.py**: One-off script created to migrate old appointment data.
-    -   **Importance:** Fixed schema inconsistencies (missing ,  to ).
+    -   **Importance:** Renders individual appointment cards.
+    -   **Changes Made:** Added 生成簡訊 button. Removed NT currency. Optimized button layout. Uses .
+-   **/app/frontend/src/components/AppointmentCalendar.jsx**: Calendar view.
+    -   **Importance:** Visual representation of appointments.
+    -   **Changes Made:** Shortened calendar title. Removed  prop to enforce numeric month display via custom formatters. Uses .
+-   **/app/frontend/src/components/IncomeReportModal.jsx**: Income report.
+    -   **Importance:** Displays financial summaries.
+    -   **Changes Made:** Removed 平均收入. Added type filtering. Reverted date inputs to native  after issues with custom calendar component. Removed NT currency. Uses .
+-   **/app/frontend/src/components/SettingsModal.jsx**: Unified 設定 modal.
+    -   **Importance:** Consolidates settings.
+    -   **Changes Made:** Added tabs for 簡訊模板設定 and 語言/日期. Renamed 語言設定 to 語言/日期.
+-   **/app/frontend/src/components/SMSPreviewModal.jsx**: **NEW** component.
+    -   **Importance:** Generates copy-pasteable SMS message.
+    -   **Changes Made:** Created file. Displays message with fixed greeting/closing and shortened date/time format. Removed NT currency. Uses .
+-   **/app/frontend/src/components/SMSTemplateContent.jsx**: **NEW** component.
+    -   **Importance:** UI for managing SMS templates (later simplified to fixed greeting/closing).
+    -   **Changes Made:** Created file.
+-   **/app/frontend/src/components/LanguageSettingContent.jsx**: **NEW** component.
+    -   **Importance:** UI for language and date format settings.
+    -   **Changes Made:** Created file. Implemented date format selection.
+-   **/app/frontend/src/components/ui/calendar.jsx**: Shadcn UI calendar component.
+    -   **Importance:** Core calendar UI.
+    -   **Changes Made:** Added  to display months as numbers and weekdays in Traditional Chinese.
+-   **/app/frontend/src/utils/dateFormat.js**: **NEW** utility.
+    -   **Importance:** Centralized date formatting based on user preference.
+    -   **Changes Made:** Created file.
+-   **/app/frontend/src/index.css**: Global CSS.
+    -   **Importance:** Global styles and responsive rules.
+    -   **Changes Made:** Contains existing mobile landscape responsive support (verified). Contains initial font size styling.
+-   **/app/scripts/update_type_name.py**: **NEW** one-off script.
+    -   **Importance:** Updates an appointment type name in MongoDB.
+    -   **Changes Made:** Created and executed to change 別的駕駛 to 代理駕駛.
 </code_architecture>
 
 <pending_tasks>
--   Income report by 類型 (type) filtering in the frontend.
--   Optimized form layout: 接客時間 and 接客地點 on one line; 抵達時間 and 抵達地點 on one line.
--   Re-integration of 行李/人數 within the flight information line.
--   Frontend adjustments to remove 平均收入 from the report and change 總收入 to 當月收入 on the dashboard homepage (backend for type filtering already done).
+-   Complete the implementation of the font size adjustment functionality within .
+-   Thoroughly test and verify the mobile landscape responsiveness across all application components.
 </pending_tasks>
 
 <current_work>
-The AI engineer is currently in the process of implementing the latest set of user requests regarding the income report and form layout.
+The AI engineer is currently in the final stages of enhancing the application's accessibility and adaptability. The immediate focus is on two user-requested features:
 
-**Specifically, the following steps have been initiated or completed:**
-1.  **Re-adding 行李/人數:** The  field has been successfully re-added to the backend models in .
-2.  **Income Report Enhancements (Backend):** The backend API endpoint  in  has been updated to support filtering income statistics by appointment . This is crucial for the 收入報表也可以按照「類型」做區別 request.
-3.  **Dashboard Income Display (Frontend):** The AI engineer has begun updating the  to change the 總收入 (Total Income) display to 當月收入 (Current Month's Income), as requested by the user.
+1.  **Font Size Adjustment:** The user requested the ability to change the application's font size for improved readability. The engineer has identified that the UI control for this feature should reside in . Furthermore, it has been confirmed that  already contains the necessary underlying logic () to dynamically adjust the global font size on the DOM. The next step is to connect the UI control to this existing logic.
 
-**Remaining aspects for this phase include:**
-*   Implementing the frontend logic for 類型 (type) filtering in the .
-*   Updating the  to remove 平均收入 (Average Income) from its display.
-*   Modifying frontend components (likely  and ) to re-integrate the 行李/人數 field specifically within the 航班資訊 line.
-*   Adjusting the layout within  to place 接客時間 and 接客地點 on a single line, and similarly for 抵達時間 and 抵達地點.
+2.  **Mobile Landscape Responsiveness:** The user also requested that the application display correctly when viewed on mobile devices in landscape orientation. The engineer has proactively checked  and verified the presence of existing CSS media queries designed to handle  orientation on various screen sizes, providing a solid foundation for this feature.
+
+The frontend service was restarted following these checks to ensure the environment is ready for further implementation and testing of these enhancements.
 </current_work>
 
 <optional_next_step>
-Update the  to remove 平均收入 and implement the 類型 filter.
+Integrate font size selection in  and then perform comprehensive testing of font size changes and mobile landscape responsiveness.
 </optional_next_step>
