@@ -37,7 +37,7 @@ jobs:
             echo "pm=npm" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install package manager (if pnpm)
+      - name: Install package manager (pnpm only)
         if: steps.pm.outputs.pm == 'pnpm'
         run: npm i -g pnpm
 
@@ -55,9 +55,13 @@ jobs:
       - name: Build
         working-directory: frontend
         run: |
-          if [ "${{ steps.pm.outputs.pm }}" = "pnpm" ]; then pnpm run build || true; fi
-          if [ "${{ steps.pm.outputs.pm }}" = "yarn" ]; then yarn build || true; fi
-          if [ "${{ steps.pm.outputs.pm }}" = "npm" ]; then npm run build || npm run build --if-present || true; fi
+          if jq -e '.scripts.build' package.json >/dev/null 2>&1; then
+            if [ "${{ steps.pm.outputs.pm }}" = "pnpm" ]; then pnpm run build; fi
+            if [ "${{ steps.pm.outputs.pm }}" = "yarn" ]; then yarn build; fi
+            if [ "${{ steps.pm.outputs.pm }}" = "npm" ]; then npm run build; fi
+          else
+            echo "No build script found in frontend/package.json"; exit 1
+          fi
 
       - name: Detect artifact path
         id: detect
@@ -67,7 +71,7 @@ jobs:
           elif [ -d frontend/build ]; then
             echo "path=frontend/build" >> $GITHUB_OUTPUT
           else
-            echo "path=frontend" >> $GITHUB_OUTPUT
+            echo "No build output found (dist/build missing)"; ls -la frontend; exit 1
           fi
 
       - name: Upload artifact
