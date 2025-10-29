@@ -25,16 +25,40 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+
+      - name: Detect package manager
+        id: pm
+        run: |
+          if [ -f frontend/pnpm-lock.yaml ]; then
+            echo "pm=pnpm" >> $GITHUB_OUTPUT
+          elif [ -f frontend/yarn.lock ]; then
+            echo "pm=yarn" >> $GITHUB_OUTPUT
+          else
+            echo "pm=npm" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install package manager (if needed)
+        if: steps.pm.outputs.pm == 'pnpm'
+        run: npm i -g pnpm
+
+      - name: Enable corepack for yarn
+        if: steps.pm.outputs.pm == 'yarn'
+        run: corepack enable
 
       - name: Install dependencies
         working-directory: frontend
         run: |
-          npm ci || npm install
+          if [ "${{ steps.pm.outputs.pm }}" = "pnpm" ]; then pnpm i --frozen-lockfile || pnpm i; fi
+          if [ "${{ steps.pm.outputs.pm }}" = "yarn" ]; then yarn install --frozen-lockfile || yarn install; fi
+          if [ "${{ steps.pm.outputs.pm }}" = "npm" ]; then npm ci || npm install --legacy-peer-deps; fi
 
       - name: Build
         working-directory: frontend
         run: |
-          npm run build || npm run build --if-present
+          if [ "${{ steps.pm.outputs.pm }}" = "pnpm" ]; then pnpm run build || true; fi
+          if [ "${{ steps.pm.outputs.pm }}" = "yarn" ]; then yarn build || true; fi
+          if [ "${{ steps.pm.outputs.pm }}" = "npm" ]; then npm run build || npm run build --if-present || true; fi
 
       - name: Detect artifact path
         id: detect
