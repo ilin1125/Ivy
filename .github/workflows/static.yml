@@ -18,60 +18,53 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Decide build strategy
+        id: strat
+        run: |
+          if [ -f frontend/package.json ] && grep -q "\"build\"" frontend/package.json; then
+            echo "mode=build" >> $GITHUB_OUTPUT
+          elif [ -f frontend/index.html ]; then
+            echo "mode=static" >> $GITHUB_OUTPUT
+          else
+            echo "No frontend build script and no frontend/index.html found."
+            exit 1
+          fi
+
+      - name: Setup Node.js (only if build)
+        if: steps.strat.outputs.mode == 'build'
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Detect package manager
-        id: pm
-        run: |
-          if [ -f frontend/pnpm-lock.yaml ]; then
-            echo "pm=pnpm" >> $GITHUB_OUTPUT
-          elif [ -f frontend/yarn.lock ]; then
-            echo "pm=yarn" >> $GITHUB_OUTPUT
-          else
-            echo "pm=npm" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Install package manager (pnpm only)
-        if: steps.pm.outputs.pm == 'pnpm'
-        run: npm i -g pnpm
-
-      - name: Enable corepack for yarn
-        if: steps.pm.outputs.pm == 'yarn'
-        run: corepack enable
-
-      - name: Install dependencies
+      - name: Install dependencies (only if build)
+        if: steps.strat.outputs.mode == 'build'
         working-directory: frontend
         run: |
-          if [ "${{ steps.pm.outputs.pm }}" = "pnpm" ]; then pnpm i --frozen-lockfile || pnpm i; fi
-          if [ "${{ steps.pm.outputs.pm }}" = "yarn" ]; then yarn install --frozen-lockfile || yarn install; fi
-          if [ "${{ steps.pm.outputs.pm }}" = "npm" ]; then npm ci || npm install --legacy-peer-deps; fi
+          if [ -f pnpm-lock.yaml ]; then npm i -g pnpm && pnpm i || pnpm i --no-frozen-lockfile; \
+          elif [ -f yarn.lock ]; then corepack enable && yarn install || yarn install --no-immutable; \
+          else npm ci || npm install --legacy-peer-deps; fi
 
-      - name: Build
+      - name: Build (only if build)
+        if: steps.strat.outputs.mode == 'build'
         working-directory: frontend
         run: |
-          if jq -e '.scripts.build' package.json >/dev/null 2>&1; then
-            if [ "${{ steps.pm.outputs.pm }}" = "pnpm" ]; then pnpm run build; fi
-            if [ "${{ steps.pm.outputs.pm }}" = "yarn" ]; then yarn build; fi
-            if [ "${{ steps.pm.outputs.pm }}" = "npm" ]; then npm run build; fi
-          else
-            echo "No build script found in frontend/package.json"; exit 1
-          fi
+          if [ -f pnpm-lock.yaml ]; then pnpm run build; \
+          elif [ -f yarn.lock ]; then yarn build; \
+          else npm run build; fi
 
       - name: Detect artifact path
         id: detect
         run: |
-          if [ -d frontend/dist ]; then
-            echo "path=frontend/dist" >> $GITHUB_OUTPUT
-          elif [ -d frontend/build ]; then
-            echo "path=frontend/build" >> $GITHUB_OUTPUT
+          if [ "${{ steps.strat.outputs.mode }}" = "build" ]; then
+            if [ -d frontend/dist ]; then echo "path=frontend/dist" >> $GITHUB_OUTPUT; exit 0; fi
+            if [ -d frontend/build ]; then echo "path=frontend/build" >> $GITHUB_OUTPUT; exit 0; fi
+            echo "Build finished but no dist/ or build/ folder found."; exit 1
           else
-            echo "No build output found (dist/build missing)"; ls -la frontend; exit 1
+            if [ -f frontend/index.html ]; then echo "path=frontend" >> $GITHUB_OUTPUT; exit 0; fi
+            echo "Static mode selected but frontend/index.html missing."; exit 1
           fi
 
       - name: Upload artifact
