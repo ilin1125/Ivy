@@ -2,8 +2,7 @@ name: Deploy React app to Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -25,24 +24,33 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         working-directory: frontend
         run: |
-          npm install --force
-          npm install @craco/craco react react-dom react-scripts --force
+          npm ci || npm install
 
-      - name: Build React app
+      - name: Build
         working-directory: frontend
-        env:
-          CI: false
-        run: npm run build
+        run: |
+          npm run build || npm run build --if-present
+
+      - name: Detect artifact path
+        id: detect
+        run: |
+          if [ -d frontend/dist ]; then
+            echo "path=frontend/dist" >> $GITHUB_OUTPUT
+          elif [ -d frontend/build ]; then
+            echo "path=frontend/build" >> $GITHUB_OUTPUT
+          else
+            echo "path=frontend" >> $GITHUB_OUTPUT
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/build
+          path: ${{ steps.detect.outputs.path }}
 
   deploy:
     needs: build
@@ -50,6 +58,9 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
