@@ -25,7 +25,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Detect package manager
         id: pm
@@ -38,7 +37,7 @@ jobs:
             echo "pm=npm" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install package manager (if needed)
+      - name: Install package manager (if pnpm)
         if: steps.pm.outputs.pm == 'pnpm'
         run: npm i -g pnpm
 
